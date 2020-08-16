@@ -11,6 +11,13 @@ command.
 make pip-install
 ```
 
+There are also a few Debian packages that are worth installing. For webscraping,
+install the Python LXML parser using the following command:
+
+```
+apt-get install python-lxml
+```
+
 ### Adding dependencies
 
 The package uses `pip-compiel` to lock dependencies. If you need to add a new
