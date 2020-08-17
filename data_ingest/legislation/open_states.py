@@ -1,4 +1,5 @@
 import os
+import urllib
 
 from data_ingest.scrape import get_page
 
@@ -25,7 +26,7 @@ def get_bulk_download_page(cookie):
 
 
 def get_bulk_download_links(page):
-    """Extracts the bulk download links from the BeautifulSoup object
+    """Extracts the bulk download links from the BeautifulSoup object.
 
     Parameters
     ----------
@@ -55,3 +56,32 @@ def get_bulk_download_links(page):
             download_links[current_state] = state_links
 
     return download_links
+
+
+def download_data(links, directory):
+    """Downloads the OpenStates data to the specified location.
+
+    Parameters
+    ----------
+    links : dict
+        A dictionary containing the lines and session names
+    directory : str
+        The name of the directory in which to save the files
+    """
+    for state, session_files in links.items():
+        subdirectory = os.path.join(directory, state.replace(" ", "_"))
+        if not os.path.exists(subdirectory):
+            print(f"Creating subdirectory: {subdirectory}")
+            os.mkdir(subdirectory)
+
+        for session_file in session_files:
+            url = session_file["link"]
+            if " " in url:
+                print(f"Skipping invalid url: {url}")
+            filename = f"{session_file['session'].replace(' ', '-')}.zip"
+            destination = os.path.join(subdirectory, filename)
+            if os.path.exists(destination):
+                print(f"Skipping {filename}. File already exists in {subdirectory}")
+            else:
+                urllib.request.urlretrieve(url, destination)
+                print(f"Downloading {url} to {destination}")

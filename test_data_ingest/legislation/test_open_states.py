@@ -1,4 +1,7 @@
+import os
+
 import requests
+import urllib.request as urlrequest
 
 import data_ingest.legislation.open_states as open_states
 
@@ -37,3 +40,26 @@ def test_get_download_links(monkeypatch):
             {"session": "File 4", "link": "https://fake.com/file4.csv"},
         ],
     }
+
+
+def test_download_data(monkeypatch, tmpdir):
+    def touch(path):
+        with open(path, "a"):
+            os.utime(path, None)
+
+    monkeypatch.setattr(urlrequest, "urlretrieve", lambda url, dest: touch(dest))
+
+    links = {
+        "Dogs": [
+            {"session": "Dogs Regular Session", "link": "https://dogs.com/dogs.zip"},
+            {"session": "Doges Special Session", "link": "htt ps://dogs.com/dogs2.zip"},
+        ],
+        "Parrots": [
+            {"session": "Parrots Regular Session", "link": "https://parrots.com"},
+            {"session": "Parrots Regular Session", "link": "https://parrots.com"},
+        ],
+    }
+
+    open_states.download_data(links, tmpdir.dirname)
+    assert "Dogs-Regular-Session.zip" in os.listdir(f"{tmpdir.dirname}/Dogs")
+    assert "Parrots-Regular-Session.zip" in os.listdir(f"{tmpdir.dirname}/Parrots")

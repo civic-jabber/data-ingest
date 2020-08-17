@@ -14,7 +14,7 @@ tidy:
 	black test_data_ingest
 
 test:
-	pytest test_data_ingest --cov=data_ingest
+	pytest test_data_ingest --cov=data_ingest -vv
 
 ################
 # Install
