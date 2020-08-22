@@ -1,7 +1,7 @@
 import os
 import urllib
 
-from data_ingest.scrape import get_page
+from data_ingest.utils.scrape import get_page
 
 
 BULK_DOWNLOAD_PAGE = "https://openstates.org/data/session-csv/"

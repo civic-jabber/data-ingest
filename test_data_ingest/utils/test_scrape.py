@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import pytest
 import requests
 
-import data_ingest.scrape as scrape
+import data_ingest.utils.scrape as scrape
 
 
 class MockResponse:
