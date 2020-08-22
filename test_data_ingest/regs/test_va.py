@@ -1,6 +1,6 @@
 import requests
 
-import data_ingest.regs.va.regs as regs
+import data_ingest.regs.va as regs
 
 
 TEST_ARCHIVE = """
@@ -29,3 +29,24 @@ def test_list_all_volumes(monkeypatch):
     monkeypatch.setattr(requests, "get", lambda *args, **kwargs: MockResponse())
     volumes = regs.list_all_volumes()
     assert volumes == {"35": ["6", "5"], "34": ["1"]}
+
+
+TEST_ISSUE = """
+<html>
+    <div id="ContentPlaceHolder1_divRegs">
+        <a href="issue32">Issue 32</a>
+        <a href="details?id=8801">A regulation</a>
+        <a href="details?id=8802">Another regulation</a>
+    </div>
+</html>
+"""
+
+
+def test_get_issue(monkeypatch):
+    class MockResponse:
+        text = TEST_ISSUE
+        status_code = 200
+
+    monkeypatch.setattr(requests, "get", lambda *args, **kwargs: MockResponse())
+    regulation_ids = regs.get_issue("fake_issue", "fake_volume")
+    assert regulation_ids == ["8801", "8802"]

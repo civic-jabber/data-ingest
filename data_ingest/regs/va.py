@@ -1,7 +1,9 @@
+from data_ingest.models.regulation import Regulation
 from data_ingest.utils.scrape import get_page
 
 
 VA_REGISTRY_PAGE = "http://register.dls.virginia.gov/archive.aspx"
+VA_REG_TEMPLATE = "http://register.dls.virginia.gov/toc.aspx?voliss={vol}:{issue}"
 
 
 def list_all_volumes():
@@ -26,3 +28,29 @@ def list_all_volumes():
                 volumes[volume] = issues
                 break
     return volumes
+
+
+def get_issue(volume, issue):
+    """Pulls a list of the IDs for all of the regulations in the issue.
+
+    Parameters
+    ----------
+    volume : str
+        The volume to pull
+    issue : str
+        The issue to pull
+
+    Returns
+    -------
+    regulation_ids : list
+        A list of IDs for the specified volume
+    """
+    url = VA_REG_TEMPLATE.format(vol=volume, issue=issue)
+    html = get_page(url)
+    regulations = html.find("div", {"id": "ContentPlaceHolder1_divRegs"})
+    links = regulations.find_all("a")
+    regulation_ids = list()
+    for link in links:
+        if "href" in link.attrs and link["href"].startswith("details"):
+            regulation_ids.append(link["href"].split("=")[-1])
+    return regulation_ids
