@@ -1,3 +1,5 @@
+import re
+
 from bs4 import BeautifulSoup
 import requests
 
@@ -23,3 +25,19 @@ def get_page(url, **kwargs):
         )
     else:
         return BeautifulSoup(response.text, "lxml")
+
+
+def clean_whitespace(text):
+    """Replace whitespace characters with a simple space.
+
+    Parameters
+    ----------
+    text : str
+        The text to clean
+
+    Returns
+    -------
+    clean_text : str
+        The text with whitespace replaced
+    """
+    return re.sub(r"\s", " ", text.strip())

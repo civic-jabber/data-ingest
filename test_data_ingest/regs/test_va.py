@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 import requests
 
 import data_ingest.regs.va as regs
@@ -50,3 +51,23 @@ def test_get_issue(monkeypatch):
     monkeypatch.setattr(requests, "get", lambda *args, **kwargs: MockResponse())
     regulation_ids = regs.get_issue_ids("fake_issue", "fake_volume")
     assert regulation_ids == ["8801", "8802"]
+
+
+TEST_REGULATION = """
+<html>
+    <p class="textbl"><u>Titles of Regulations</b></p>
+    <p class="textbl"><b> VA-001. Fish</b></p>
+    <p class="textbl"><strong> VA-002. Lobsters</strong></p>
+</html>
+"""
+
+
+def test_get_metadata():
+    html = BeautifulSoup(TEST_REGULATION, "lxml")
+    metadata = regs._get_metadata(html)
+    assert metadata == {
+        "titles": [
+            {"title": "VA-001", "description": "Fish"},
+            {"title": "VA-002", "description": "Lobsters"},
+        ]
+    }
