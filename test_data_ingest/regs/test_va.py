@@ -48,5 +48,5 @@ def test_get_issue(monkeypatch):
         status_code = 200
 
     monkeypatch.setattr(requests, "get", lambda *args, **kwargs: MockResponse())
-    regulation_ids = regs.get_issue("fake_issue", "fake_volume")
+    regulation_ids = regs.get_issue_ids("fake_issue", "fake_volume")
     assert regulation_ids == ["8801", "8802"]

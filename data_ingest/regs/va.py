@@ -4,6 +4,7 @@ from data_ingest.utils.scrape import get_page
 
 VA_REGISTRY_PAGE = "http://register.dls.virginia.gov/archive.aspx"
 VA_REG_TEMPLATE = "http://register.dls.virginia.gov/toc.aspx?voliss={vol}:{issue}"
+VA_REGULATION = "http://register.dls.virginia.gov/details.aspx?id={site_id}"
 
 
 def list_all_volumes():
@@ -30,7 +31,7 @@ def list_all_volumes():
     return volumes
 
 
-def get_issue(volume, issue):
+def get_issue_ids(volume, issue):
     """Pulls a list of the IDs for all of the regulations in the issue.
 
     Parameters
@@ -54,3 +55,12 @@ def get_issue(volume, issue):
         if "href" in link.attrs and link["href"].startswith("details"):
             regulation_ids.append(link["href"].split("=")[-1])
     return regulation_ids
+
+
+class VirginiaRegulation(Regulation):
+    """Pulls structured information about a regulation from the Virginia Registry
+    website."""
+
+    def __init__(self, site_id):
+        url = VA_REGULATION.format(site_id=site_id)
+        self.html = get_page(url)
