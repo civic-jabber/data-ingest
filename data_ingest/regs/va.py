@@ -1,3 +1,5 @@
+import re
+
 from data_ingest.models.regulation import Regulation
 from data_ingest.utils.scrape import get_page, clean_whitespace
 
@@ -49,8 +51,97 @@ def _get_metadata(html):
     """
     meta = dict()
     metadata = html.find_all("p", class_="textbl")
+    issue, volume, date = _get_issue_data(html)
     meta["titles"] = _get_titles(metadata)
+    meta["authority"] = _get_target_metadata(metadata, "Statuatory Authority")
+    meta["contact"] = _get_target_metadata(metadata, "Agency Contact")
+    meta["effective_date"] = _get_target_metadata(metadata, "Effective Date")
+    meta["summary"] = _get_summary(html)
+    meta["issue"] = issue
+    meta["volume"] = volume
+    meta["date"] = date
     return meta
+
+
+def _get_issue_data(html):
+    """Pulls the issue metadata from the header
+
+    Parameters:
+    -----------
+    html : bs4.BeautifulSoup
+        The bs4 reprsentation of the page
+
+    Returns:
+    --------
+    issue : str
+        The issue number
+    volume : str
+        The volume number
+    date : str
+        The date of publication
+    """
+    issue_desc = html.find("div", class_="currentIssue-DateIssue").text
+
+    start, end = re.search(r"(?<=Vol. )\d{2,3}", issue_desc).span()
+    volume = issue_desc[start:end]
+
+    start, end = re.search(r"(?<=Iss. )\d{2,3}", issue_desc).span()
+    issue = issue_desc[start:end]
+
+    start, end = re.search(r"(?<= - )(.*)", issue_desc).span()
+    date = issue_desc[start:end]
+
+    return issue, volume, date
+
+
+def _get_target_metadata(metadata, target):
+    """Finds the metadata for the associated paragraph.
+
+    Parameters
+    ----------
+    metadata : bs4.BeautifulSoup
+        The bs4 representaiton of the metadata section
+    target : str
+        The name of the metadata tag to search for
+
+    Returns
+    -------
+    output : str
+        The associated metadata
+    """
+    for line in metadata:
+        spans = line.find_all("span")
+        if not spans:
+            continue
+        if target in spans[0].text:
+            if len(spans) == 2:
+                extraction = spans[1].text
+            else:
+                extraction = line.text.replace(spans[0].text, "")
+            return clean_whitespace(extraction)
+
+
+def _get_summary(html):
+    """Pulls the summary of the regulation from the page
+
+    Parameters
+    ----------
+    metadata : bs4.BeautifulSoup
+        A bs4 representation of the metadata section
+
+    Returns
+    -------
+    summary : str
+        The text summary of the regulation
+    """
+    paras = html.find_all("p")
+    for i, para in enumerate(paras):
+        class_ = para.get("class")
+        if not class_:
+            continue
+        if class_[0] == "summary" and i < len(paras) - 1:
+            next_para = paras[i + 1]
+            return next_para.text
 
 
 def _get_titles(metadata):
@@ -59,7 +150,7 @@ def _get_titles(metadata):
     Parameters
     ----------
     metadata : bs4.BeautfiulSoup
-        An html element from the header section
+        A bs4 representation of the metadata section
 
     Returns
     -------

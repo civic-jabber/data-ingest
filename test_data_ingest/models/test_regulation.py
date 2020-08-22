@@ -12,6 +12,8 @@ NOT_IMPLEMENTED_METHODS = [
     "get_point_of_contact",
     "get_volume",
     "get_issue",
+    "get_date",
+    "get_authority",
 ]
 
 

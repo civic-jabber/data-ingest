@@ -17,7 +17,13 @@ class Regulation:
     def get_summary(self):
         raise NotImplementedError
 
+    def get_authority(self):
+        raise NotImplementedError
+
     def get_effective_date(self):
+        raise NotImplementedError
+
+    def get_date(self):
         raise NotImplementedError
 
     def get_point_of_contact(self):

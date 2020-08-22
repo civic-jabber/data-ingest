@@ -55,9 +55,24 @@ def test_get_issue(monkeypatch):
 
 TEST_REGULATION = """
 <html>
+    <div class="currentIssue-DateIssue">Vol. 19 Iss. 14 - June 01, 2020</div>
     <p class="textbl"><u>Titles of Regulations</b></p>
     <p class="textbl"><b> VA-001. Fish</b></p>
     <p class="textbl"><strong> VA-002. Lobsters</strong></p>
+    <p class="textbl">
+        <span>Effective Date</span>
+        <span>June 08, 2020</span>
+    </p>
+    <p class="textbl">
+        <span>Agency Contact</span>
+        Jabber Robinson
+    </p>
+    <p class="textbl">
+        <span>Statuatory Authority</span>
+        <span>Parrot law, subsection 4</span>
+    </p>
+    <p class="summary">Summary</p>
+    <p>This is such a great reg</p>
 </html>
 """
 
@@ -69,5 +84,12 @@ def test_get_metadata():
         "titles": [
             {"title": "VA-001", "description": "Fish"},
             {"title": "VA-002", "description": "Lobsters"},
-        ]
+        ],
+        "summary": "This is such a great reg",
+        "effective_date": "June 08, 2020",
+        "contact": "Jabber Robinson",
+        "authority": "Parrot law, subsection 4",
+        "date": "June 01, 2020",
+        "issue": "14",
+        "volume": "19",
     }
