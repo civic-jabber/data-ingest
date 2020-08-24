@@ -73,14 +73,26 @@ TEST_REGULATION = """
     </p>
     <p class="summary">Summary</p>
     <p>This is such a great reg</p>
+    <p class="vacno0">VA-001. Good Reg</p>
+    <p class="sectind0">A good</p>
+    <p class="sectind0">reg</p>
+    <p class="vacno0">VA-002. Bad Reg</p>
+    <p class="sectind0">A bad</p>
+    <p class="sectind0">reg</p>
+    <p>Skip me</p>
 </html>
 """
 
 
-def test_get_metadata():
-    html = BeautifulSoup(TEST_REGULATION, "lxml")
-    metadata = regs._get_metadata(html)
-    assert metadata == {
+def test_get_regulation(monkeypatch):
+    class MockResponse:
+        text = TEST_REGULATION
+        status_code = 200
+
+    monkeypatch.setattr(requests, "get", lambda *args, **kwargs: MockResponse())
+
+    regulation = regs.get_regulation("fake_id")
+    assert regulation == {
         "titles": [
             {"title": "VA-001", "description": "Fish"},
             {"title": "VA-002", "description": "Lobsters"},
@@ -92,4 +104,8 @@ def test_get_metadata():
         "date": "June 01, 2020",
         "issue": "14",
         "volume": "19",
+        "content": {
+            "VA-001": {"description": "Good Reg", "text": "A good reg"},
+            "VA-002": {"description": "Bad Reg", "text": "A bad reg"},
+        },
     }

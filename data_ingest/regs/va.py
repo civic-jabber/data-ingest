@@ -33,10 +33,12 @@ def get_regulation(site_id):
         The bs4 representation for the site
     """
     url = VA_REGULATION.format(site_id=site_id)
-    return get_page(url)
+    html = get_page(url)
+    regulation = _parse_html(html)
+    return regulation
 
 
-def _get_metadata(html):
+def _parse_html(html):
     """Pulls metadata for the regulations that are addressed on the page.
 
     Parameters
@@ -46,21 +48,60 @@ def _get_metadata(html):
 
     Returns
     -------
-    metadata : dict
+    reg : dict
         A dictionary of metadata for the regulations
     """
-    meta = dict()
+    reg = dict()
     metadata = html.find_all("p", class_="textbl")
     issue, volume, date = _get_issue_data(html)
-    meta["titles"] = _get_titles(metadata)
-    meta["authority"] = _get_target_metadata(metadata, "Statuatory Authority")
-    meta["contact"] = _get_target_metadata(metadata, "Agency Contact")
-    meta["effective_date"] = _get_target_metadata(metadata, "Effective Date")
-    meta["summary"] = _get_summary(html)
-    meta["issue"] = issue
-    meta["volume"] = volume
-    meta["date"] = date
-    return meta
+    reg["titles"] = _get_titles(metadata)
+    reg["authority"] = _get_target_metadata(metadata, "Statuatory Authority")
+    reg["contact"] = _get_target_metadata(metadata, "Agency Contact")
+    reg["effective_date"] = _get_target_metadata(metadata, "Effective Date")
+    reg["summary"] = _get_summary(html)
+    reg["issue"] = issue
+    reg["volume"] = volume
+    reg["date"] = date
+    reg["content"] = _get_regulation_content(html)
+    return reg
+
+
+def _get_regulation_content(html):
+    """Pulls the regulation text from the document
+
+    Parameters
+    ----------
+    html : bs4.BeautifulSoupt
+        The bs4 representation of the site
+
+    Returns
+    -------
+    content : dict
+        A dictionary where the keys are the regulation numbers and the entries contain a
+        description of the regulation and the text
+    """
+
+    def _add_reg_text(regulation, description, text):
+        if regulation and description:
+            content[regulation] = {
+                "text": clean_whitespace(text),
+                "description": clean_whitespace(description),
+            }
+
+    paras = html.find_all("p")
+    content = dict()
+    regulation, description, text = (None, None, None)
+    for para in paras:
+        if "class" not in para.attrs:
+            continue
+        if para["class"][0] == "vacno0":
+            _add_reg_text(regulation, description, text)
+            regulation, description = tuple(para.text.split(".")[:2])
+            text = str()
+        elif para["class"][0] == "sectind0":
+            text += f"{para.text} "
+    _add_reg_text(regulation, description, text)
+    return content
 
 
 def _get_issue_data(html):
