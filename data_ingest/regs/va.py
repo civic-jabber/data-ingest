@@ -90,7 +90,9 @@ def _get_regulation_content(html):
 
     paras = html.find_all("p")
     content = dict()
-    regulation, description, text = (None, None, None)
+    regulation = None
+    description = None
+    text = None
     for para in paras:
         if "class" not in para.attrs:
             continue
@@ -99,6 +101,9 @@ def _get_regulation_content(html):
             regulation, description = tuple(para.text.split(".")[:2])
             text = str()
         elif para["class"][0] == "sectind0":
+            # Remove strikethrough text
+            for strikethrough in para.find_all("s"):
+                strikethrough.decompose()
             text += f"{para.text} "
     _add_reg_text(regulation, description, text)
     return content

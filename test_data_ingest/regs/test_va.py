@@ -74,7 +74,7 @@ TEST_REGULATION = """
     <p class="summary">Summary</p>
     <p>This is such a great reg</p>
     <p class="vacno0">VA-001. Good Reg</p>
-    <p class="sectind0">A good</p>
+    <p class="sectind0">A<s>n</s> good<s>outstanding</s></p>
     <p class="sectind0">reg</p>
     <p class="vacno0">VA-002. Bad Reg</p>
     <p class="sectind0">A bad</p>
