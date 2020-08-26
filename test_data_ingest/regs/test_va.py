@@ -56,22 +56,24 @@ def test_get_issue(monkeypatch):
 TEST_REGULATION = """
 <html>
     <div class="currentIssue-DateIssue">Vol. 19 Iss. 14 - June 01, 2020</div>
-    <p class="textbl"><u>Titles of Regulations</b></p>
+    <p class="textbl"><u>Titles of Regulation:s</b></p>
     <p class="textbl"><b> VA-001. Fish</b></p>
     <p class="textbl"><strong> VA-002. Lobsters</strong></p>
     <p class="textbl">
-        <span>Effective Date</span>
-        <span>June 08, 2020</span>
+        <span>Effective Date:</span>
+        June 08, 2020
     </p>
     <p class="textbl">
-        <span>Agency Contact</span>
-        Jabber Robinson
+        <u>Agency Contact:</u>
+        Jabber Robinson, <span>jabber@robinson.com</span>
     </p>
     <p class="textbl">
-        <span>Statuatory Authority</span>
+        <span>Statuatory Authority:</span>
         <span>Parrot law, subsection 4</span>
     </p>
-    <p class="summary">Summary</p>
+    <p class="summary">Summary:</p>
+    <p>This is such a great reg</p>
+    <p class="preamble">Preamble:</p>
     <p>This is such a great reg</p>
     <p class="vacno0">VA-001. Good Reg</p>
     <p class="sectind0">A<s>n</s> good<s>outstanding</s></p>
@@ -99,7 +101,8 @@ def test_get_regulation(monkeypatch):
         ],
         "summary": "This is such a great reg",
         "effective_date": "June 08, 2020",
-        "contact": "Jabber Robinson",
+        "preamble": "This is such a great reg",
+        "contact": "Jabber Robinson, jabber@robinson.com",
         "authority": "Parrot law, subsection 4",
         "date": "June 01, 2020",
         "issue": "14",
@@ -108,4 +111,5 @@ def test_get_regulation(monkeypatch):
             "VA-001": {"description": "Good Reg", "text": "A good reg"},
             "VA-002": {"description": "Bad Reg", "text": "A bad reg"},
         },
+        "link": regs.VA_REGULATION.format(site_id="fake_id"),
     }

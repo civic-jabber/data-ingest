@@ -13,9 +13,7 @@ class VirginiaRegulation(Regulation):
     """Pulls structured information about a regulation from the Virginia Registry
     website."""
 
-    @classmethod
-    def from_html(cls, html):
-        pass
+    pass
 
 
 def get_regulation(site_id):
@@ -35,6 +33,7 @@ def get_regulation(site_id):
     url = VA_REGULATION.format(site_id=site_id)
     html = get_page(url)
     regulation = _parse_html(html)
+    regulation["link"] = url
     return regulation
 
 
@@ -55,10 +54,11 @@ def _parse_html(html):
     metadata = html.find_all("p", class_="textbl")
     issue, volume, date = _get_issue_data(html)
     reg["titles"] = _get_titles(metadata)
-    reg["authority"] = _get_target_metadata(metadata, "Statuatory Authority")
-    reg["contact"] = _get_target_metadata(metadata, "Agency Contact")
+    reg["authority"] = _get_target_metadata(metadata, "Authority")
+    reg["contact"] = _get_target_metadata(metadata, "Contact")
     reg["effective_date"] = _get_target_metadata(metadata, "Effective Date")
     reg["summary"] = _get_summary(html)
+    reg["preamble"] = _get_summary(html, summary_class="preamble")
     reg["issue"] = issue
     reg["volume"] = volume
     reg["date"] = date
@@ -155,19 +155,13 @@ def _get_target_metadata(metadata, target):
     output : str
         The associated metadata
     """
+    extraction = None
     for line in metadata:
-        spans = line.find_all("span")
-        if not spans:
-            continue
-        if target in spans[0].text:
-            if len(spans) == 2:
-                extraction = spans[1].text
-            else:
-                extraction = line.text.replace(spans[0].text, "")
-            return clean_whitespace(extraction)
+        if target in line.text:
+            return clean_whitespace(line.text.split(":")[1])
 
 
-def _get_summary(html):
+def _get_summary(html, summary_class="summary"):
     """Pulls the summary of the regulation from the page
 
     Parameters
@@ -185,9 +179,9 @@ def _get_summary(html):
         class_ = para.get("class")
         if not class_:
             continue
-        if class_[0] == "summary" and i < len(paras) - 1:
+        if class_[0] == "preamble" and i < len(paras) - 1:
             next_para = paras[i + 1]
-            return next_para.text
+            return clean_whitespace(next_para.text)
 
 
 def _get_titles(metadata):
