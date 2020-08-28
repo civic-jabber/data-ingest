@@ -1,36 +1,28 @@
+from dataclasses import dataclass
+import datetime
 import uuid
 
+from data_ingest.models.base import DataModel
 
-class Regulation:
-    def get_id(self):
-        return uuid.uuid4().hex
 
-    def get_title(self):
-        raise NotImplementedError
+@dataclass
+class Regulation(DataModel):
+    id_: str = uuid.uuid4().hex
+    issue: str = None
+    volume: str = None
 
-    def get_description(self):
-        raise NotImplementedError
+    regulation_number: str = None
+    description: str = None
+    summary: str = None
+    preamble: str = None
+    body: str = None
 
-    def get_text(self):
-        raise NotImplementedError
+    titles: list = None
+    authority: str = None
+    contact: str = None
 
-    def get_summary(self):
-        raise NotImplementedError
+    register_date: datetime.datetime = None
+    effective_date: datetime.datetime = None
+    as_of_date: datetime.datetime = datetime.datetime.now()
 
-    def get_authority(self):
-        raise NotImplementedError
-
-    def get_effective_date(self):
-        raise NotImplementedError
-
-    def get_date(self):
-        raise NotImplementedError
-
-    def get_point_of_contact(self):
-        raise NotImplementedError
-
-    def get_volume(self):
-        raise NotImplementedError
-
-    def get_issue(self):
-        raise NotImplementedError
+    link: str = None

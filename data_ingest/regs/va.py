@@ -53,16 +53,20 @@ def _parse_html(html):
     reg = dict()
     metadata = html.find_all("p", class_="textbl")
     issue, volume, date = _get_issue_data(html)
+
+    reg["issue"] = issue
+    reg["volume"] = volume
+
+    reg["content"] = _get_regulation_content(html)
+    reg["summary"] = _get_summary(html)
+    reg["preamble"] = _get_summary(html, summary_class="preamble")
+
     reg["titles"] = _get_titles(metadata)
     reg["authority"] = _get_target_metadata(metadata, "Authority")
     reg["contact"] = _get_target_metadata(metadata, "Contact")
+
+    reg["register_date"] = date
     reg["effective_date"] = _get_target_metadata(metadata, "Effective Date")
-    reg["summary"] = _get_summary(html)
-    reg["preamble"] = _get_summary(html, summary_class="preamble")
-    reg["issue"] = issue
-    reg["volume"] = volume
-    reg["date"] = date
-    reg["content"] = _get_regulation_content(html)
     return reg
 
 

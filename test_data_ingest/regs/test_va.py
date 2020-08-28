@@ -95,21 +95,21 @@ def test_get_regulation(monkeypatch):
 
     regulation = regs.get_regulation("fake_id")
     assert regulation == {
-        "titles": [
-            {"title": "VA-001", "description": "Fish"},
-            {"title": "VA-002", "description": "Lobsters"},
-        ],
-        "summary": "This is such a great reg",
-        "effective_date": "June 08, 2020",
-        "preamble": "This is such a great reg",
-        "contact": "Jabber Robinson, jabber@robinson.com",
-        "authority": "Parrot law, subsection 4",
-        "date": "June 01, 2020",
         "issue": "14",
         "volume": "19",
         "content": {
             "VA-001": {"description": "Good Reg", "text": "A good reg"},
             "VA-002": {"description": "Bad Reg", "text": "A bad reg"},
         },
+        "summary": "This is such a great reg",
+        "preamble": "This is such a great reg",
+        "titles": [
+            {"title": "VA-001", "description": "Fish"},
+            {"title": "VA-002", "description": "Lobsters"},
+        ],
+        "contact": "Jabber Robinson, jabber@robinson.com",
+        "authority": "Parrot law, subsection 4",
+        "effective_date": "June 08, 2020",
+        "register_date": "June 01, 2020",
         "link": regs.VA_REGULATION.format(site_id="fake_id"),
     }
