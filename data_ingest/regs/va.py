@@ -9,13 +9,6 @@ VA_REG_TEMPLATE = "http://register.dls.virginia.gov/toc.aspx?voliss={vol}:{issue
 VA_REGULATION = "http://register.dls.virginia.gov/details.aspx?id={site_id}"
 
 
-class VirginiaRegulation(Regulation):
-    """Pulls structured information about a regulation from the Virginia Registry
-    website."""
-
-    pass
-
-
 def get_regulation(site_id):
     """Pulls the html for a regulation using the site id. Note, in some cases there are
     multiple regulations addressed on a single page.

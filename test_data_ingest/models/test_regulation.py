@@ -5,6 +5,7 @@ from data_ingest.models.regulation import Regulation
 
 MOCK_REGULATION = {
     "id_": "1",
+    "state": "VA",
     "issue": "14",
     "volume": "19",
     "regulation_number": "VA-001",
