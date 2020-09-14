@@ -24,6 +24,28 @@ The package uses `pip-compiel` to lock dependencies. If you need to add a new
 dependency, simply update the appropriate `.in` file in the `requirements` folder and
 then run `make pip-compile`.
 
+### Database Connections
+
+The database connections utility manages connections to the database. To connect to a
+specific database, set the following environmental variable:
+
+```
+CIVIC_JABBER_PG_HOST
+CIVIC_JABBER_PG_PORT
+CIVIC_JABBER_PG_DB
+CIVIC_JABBER_PG_USER
+```
+
+If you do not set an environmental variable, it will assume a default value. You can
+connect to the database with:
+
+```python
+from data_ingest.utils.connection import connect
+
+connection = connect()
+
+```
+
 ## Sources
 
 1. OpenStates - data on legislators and the status of legislation
