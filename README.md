@@ -20,7 +20,7 @@ apt-get install python-lxml
 
 ### Adding dependencies
 
-The package uses `pip-compiel` to lock dependencies. If you need to add a new
+The package uses `pip-compile` to lock dependencies. If you need to add a new
 dependency, simply update the appropriate `.in` file in the `requirements` folder and
 then run `make pip-compile`.
 
