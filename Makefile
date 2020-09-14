@@ -30,3 +30,14 @@ pip-install:
 	pip install -r requirements/dev.txt
 	pip install -r requirements/test.txt
 	pip install -e .
+
+
+################
+# Database
+################
+
+db-init:
+	psql -U $(user) -d $(db) -f sql/schema.sql
+	for file in sql/tables/* ; do \
+		psql -U $(user) -d $(db) -f $${file} ; \
+	done

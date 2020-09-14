@@ -24,7 +24,20 @@ The package uses `pip-compile` to lock dependencies. If you need to add a new
 dependency, simply update the appropriate `.in` file in the `requirements` folder and
 then run `make pip-compile`.
 
-### Database Connections
+## Database
+
+### Initializing the Database
+
+The scripts for setting of the schema and tables are the in the `sql` folder. You can
+initialize the database using the following command:
+
+```
+make db-init user={user} db={database}
+```
+
+The command will loop through the SQL files in the `sql/tables` folder.
+
+### Connections
 
 The database connections utility manages connections to the database. To connect to a
 specific database, set the following environmental variable:
