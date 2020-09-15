@@ -7,7 +7,7 @@ from data_ingest.models.base import DataModel
 
 @dataclass
 class Regulation(DataModel):
-    id_: str = uuid.uuid4().hex
+    id: str = uuid.uuid4().hex
     state: str = None
     issue: str = None
     volume: str = None
