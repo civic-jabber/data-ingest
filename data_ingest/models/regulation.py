@@ -27,3 +27,5 @@ class Regulation(DataModel):
     as_of_date: datetime.datetime = datetime.datetime.now()
 
     link: str = None
+
+    extra_attributes: dict = None

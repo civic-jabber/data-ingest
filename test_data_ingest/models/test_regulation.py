@@ -20,6 +20,7 @@ MOCK_REGULATION = {
     "register_date": datetime.datetime(2020, 7, 20),
     "as_of_date": datetime.datetime(2020, 8, 4),
     "link": "https://thebestregs.com",
+    "extra_attributes": dict(),
 }
 
 
