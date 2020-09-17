@@ -72,9 +72,9 @@ TEST_REGULATION = """
         <span>Parrot law, subsection 4</span>
     </p>
     <p class="summary">Summary:</p>
-    <p>This is such a great reg</p>
+    <p>A wonderful summary!</p>
     <p class="preamble">Preamble:</p>
-    <p>This is such a great reg</p>
+    <p>A wonderful preamble!</p>
     <p class="vacno0">VA-001. Good Reg</p>
     <p class="sectind0">A<s>n</s> good<s>outstanding</s></p>
     <p class="sectind0">reg</p>
@@ -101,8 +101,8 @@ def test_get_regulation(monkeypatch):
             "VA-001": {"description": "Good Reg", "text": "A good reg"},
             "VA-002": {"description": "Bad Reg", "text": "A bad reg"},
         },
-        "summary": "This is such a great reg",
-        "preamble": "This is such a great reg",
+        "summary": "A wonderful summary!",
+        "preamble": "A wonderful preamble!",
         "titles": [
             {"title": "VA-001", "description": "Fish"},
             {"title": "VA-002", "description": "Lobsters"},
