@@ -32,7 +32,7 @@ The scripts for setting of the schema and tables are the in the `sql` folder. Yo
 initialize the database using the following command:
 
 ```
-make db-init user={user} db={database}
+make db-init user={user} db={database} host={host}
 ```
 
 The command will loop through the SQL files in the `sql/tables` folder.
