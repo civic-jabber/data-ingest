@@ -37,7 +37,7 @@ pip-install:
 ################
 
 db-init:
-	psql -U $(user) -d $(db) -f sql/schema.sql
+	psql -U $(user) -d $(db) -h $(host) -f sql/schema.sql
 	for file in sql/tables/* ; do \
-		psql -U $(user) -d $(db) -f $${file} ; \
+		psql -U $(user) -d $(db) -h $(host) -f $${file} ; \
 	done
