@@ -1,7 +1,9 @@
+import datetime
 import re
 
 from data_ingest.models.regulation import Regulation
-from data_ingest.utils.scrape import get_page, clean_whitespace
+from data_ingest.utils.data_cleaning import clean_whitespace, extract_date
+from data_ingest.utils.scrape import get_page
 
 
 VA_REGISTRY_PAGE = "http://register.dls.virginia.gov/archive.aspx"
@@ -20,14 +22,55 @@ def get_regulation(site_id):
 
     Returns
     -------
-    html : bs4.BeautifulSoup
-        The bs4 representation for the site
+    regulation : dict
+        A dictionary representing the infromation scraped from the registry site.
     """
     url = VA_REGULATION.format(site_id=site_id)
     html = get_page(url)
     regulation = _parse_html(html)
     regulation["link"] = url
     return regulation
+
+
+def normalize_regulation(regulation):
+    """Normalizes the regulation dictionary and converts it to the standardized
+    Regulation object.
+
+    Parameters
+    ----------
+    regulation : dict
+        A dictionary representing the infromation scraped from the registry site.
+
+    Returns:
+    --------
+    normalized_regulation : Regulation
+        A base Regulation object
+    """
+    normalized_reg = dict()
+
+    body = str()
+    for subtitle, content in regulation["content"].items():
+        body += f"{subtitle}\n{content}\n"
+    normalized_reg["body"] = body if body else None
+
+    titles = list()
+    extra_attributes = {"title_descriptions": dict()}
+    for item in regulation["titles"]:
+        title = item["title"]
+        description = item["description"]
+        titles.append(title)
+        extra_attributes["title_descriptions"][title] = description
+    normalized_reg["titles"] = titles
+    normalized_reg["extra_attributes"] = extra_attributes
+
+    normalized_reg["effective_date"] = extract_date(regulation["effective_date"])
+    normalized_reg["register_date"] = extract_date(regulation["register_date"])
+
+    for key in vars(Regulation()):
+        if key not in normalized_reg and key in regulation:
+            normalized_reg[key] = regulation[key]
+
+    return Regulation.from_dict(normalized_reg)
 
 
 def list_all_volumes():
@@ -205,6 +248,8 @@ def _get_target_metadata(metadata, target):
     extraction = None
     for line in metadata:
         if target in line.text:
+            if target == "Effective Date" and target.endswith("."):
+                line = line[:-1]
             return clean_whitespace(line.text.split(":")[1])
 
 

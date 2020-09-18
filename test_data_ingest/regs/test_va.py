@@ -113,3 +113,31 @@ def test_get_regulation(monkeypatch):
         "register_date": "June 01, 2020",
         "link": regs.VA_REGULATION.format(site_id="fake_id"),
     }
+
+
+def test_normalize_regulation():
+    regulation = {
+        "issue": "25",
+        "volume": "36",
+        "content": {
+            "11VAC10-120-50": {
+                "text": "The following provisions shall apply.",
+                "description": "Claiming procedure",
+            }
+        },
+        "summary": "The amendments (i) allow for the voiding of a claim.",
+        "preamble": None,
+        "titles": [
+            {
+                "title": "11VAC10-120",
+                "description": "Claiming Races (amending 11VAC10-120-50)",
+            }
+        ],
+        "authority": "§ 59.1-369 of the Code of Virginia.",
+        "contact": "Kimberly Mackey, Regulatory Coordinator",
+        "register_date": "August 03, 2020",
+        "effective_date": "July 27, 2020.",
+        "link": "http://register.dls.virginia.gov/details.aspx?id=8112",
+    }
+    normalized_reg = regs.normalize_regulation(regulation)
+    assert isinstance(normalized_reg, regs.Regulation)
