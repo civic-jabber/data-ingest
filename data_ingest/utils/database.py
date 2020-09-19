@@ -12,7 +12,7 @@ def connect():
     return psycopg2.connect(f"dbname={db} user={user} host={host} port={port}")
 
 
-def _execute_sql(sql, connection, values=None, commit=True):
+def execute_sql(sql, connection, values=None, commit=True):
     """Executes a SQL statement against the database.
 
     Parameters
@@ -53,7 +53,7 @@ def insert_obj(obj, table, schema="civic_jabber", connection=None):
         INSERT INTO {schema}.{table} ({columns})
         VALUES ({subs})
     """
-    _execute_sql(sql, connection, values)
+    execute_sql(sql, connection, values)
 
 
 def delete_by_id(id_, table, schema="civic_jabber", id_col="id", connection=None):
@@ -76,4 +76,4 @@ def delete_by_id(id_, table, schema="civic_jabber", id_col="id", connection=None
         DELETE FROM {schema}.{table}
         WHERE {id_col}='{id_}'
     """
-    _execute_sql(sql, connection)
+    execute_sql(sql, connection)

@@ -6,7 +6,7 @@ import pandas as pd
 import psycopg2
 import testing.postgresql
 
-import data_ingest.utils.connection as connection
+import data_ingest.utils.database as database
 from data_ingest.utils.environ import modified_environ
 
 
@@ -14,7 +14,7 @@ def test_connect(monkeypatch):
     monkeypatch.setattr(psycopg2, "connect", lambda connection_str: connection_str)
     env = {"CIVIC_JABBER_PG_USER": "tiki", "CIVIC_JABBER_PG_HOST": "localhost"}
     with modified_environ(**env):
-        conn = connection.connect()
+        conn = database.connect()
         assert conn == "dbname=postgres user=tiki host=localhost port=5432"
 
 
@@ -48,14 +48,14 @@ class MyTestCase(unittest.TestCase):
         conn = psycopg2.connect(**self.postgresql.dsn())
         parrot = Parrot()
 
-        connection._execute_sql("TRUNCATE fakeroo.parrot", connection=conn)
+        database.execute_sql("TRUNCATE fakeroo.parrot", connection=conn)
 
-        connection.insert_obj(parrot, schema="fakeroo", table="parrot", connection=conn)
+        database.insert_obj(parrot, schema="fakeroo", table="parrot", connection=conn)
         data = pd.read_sql("SELECT * FROM fakeroo.parrot", conn)
         pd.testing.assert_frame_equal(
             data, pd.DataFrame({"id": ["1"], "color": ["blue"]})
         )
 
-        connection.delete_by_id("1", schema="fakeroo", table="parrot", connection=conn)
+        database.delete_by_id("1", schema="fakeroo", table="parrot", connection=conn)
         data = pd.read_sql("SELECT * FROM fakeroo.parrot", conn)
         assert len(data) == 0
