@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 
 import data_ingest.regs.va as regs
+import data_ingest.utils.database as db
 
 
 TEST_ARCHIVE = """
@@ -116,29 +117,48 @@ def test_get_regulation(monkeypatch):
     }
 
 
+MOCK_REGULATION = {
+    "issue": "25",
+    "volume": "36",
+    "content": {
+        "11VAC10-120-50": {
+            "text": "The following provisions shall apply.",
+            "description": "Claiming procedure",
+        }
+    },
+    "summary": "The amendments (i) allow for the voiding of a claim.",
+    "preamble": None,
+    "titles": [
+        {
+            "title": "11VAC10-120",
+            "description": "Claiming Races (amending 11VAC10-120-50)",
+        }
+    ],
+    "authority": "§ 59.1-369 of the Code of Virginia.",
+    "contact": "Kimberly Mackey, Regulatory Coordinator",
+    "register_date": "August 03, 2020",
+    "effective_date": "July 27, 2020.",
+    "link": "http://register.dls.virginia.gov/details.aspx?id=8112",
+}
+
+
 def test_normalize_regulation():
-    regulation = {
-        "issue": "25",
-        "volume": "36",
-        "content": {
-            "11VAC10-120-50": {
-                "text": "The following provisions shall apply.",
-                "description": "Claiming procedure",
-            }
-        },
-        "summary": "The amendments (i) allow for the voiding of a claim.",
-        "preamble": None,
-        "titles": [
-            {
-                "title": "11VAC10-120",
-                "description": "Claiming Races (amending 11VAC10-120-50)",
-            }
-        ],
-        "authority": "§ 59.1-369 of the Code of Virginia.",
-        "contact": "Kimberly Mackey, Regulatory Coordinator",
-        "register_date": "August 03, 2020",
-        "effective_date": "July 27, 2020.",
-        "link": "http://register.dls.virginia.gov/details.aspx?id=8112",
-    }
-    normalized_reg = regs.normalize_regulation(regulation)
+    normalized_reg = regs.normalize_regulation(MOCK_REGULATION)
     assert isinstance(normalized_reg, regs.Regulation)
+
+
+def test_load_va_regulations(monkeypatch):
+    mock_loaded_issues = [("1", "1"), ("1", "2")]
+    mock_listed_issues = {"1": ["1", "2"], "2": ["1"]}
+    mock_issue_ids = ["1111", "2222"]
+
+    monkeypatch.setattr(db, "connect", lambda *args, **kwargs: "connection")
+    monkeypatch.setattr(db, "insert_obj", lambda *args, **kwargs: None)
+    monkeypatch.setattr(db, "execute_sql", lambda *args, **kwargs: mock_loaded_issues)
+    monkeypatch.setattr(regs, "get_issue_ids", lambda volume, issue: mock_issue_ids)
+    monkeypatch.setattr(regs, "get_regulation", lambda issue_id: MOCK_REGULATION)
+    monkeypatch.setattr(
+        regs, "list_all_volumes", lambda *args, **kwargs: mock_listed_issues
+    )
+
+    regs.load_va_regulations(sleep_time=0)

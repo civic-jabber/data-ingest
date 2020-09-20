@@ -33,6 +33,7 @@ def load_va_regulations(sleep_time=1):
     sleep_time : int
         The amount of time to sleep between calls to the registry website
     """
+    _connect()
     registry_issues = list_all_volumes()
     db_issues = _get_loaded_issues()
 
