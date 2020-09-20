@@ -109,7 +109,7 @@ def normalize_regulation(regulation):
 
     body = str()
     for subtitle, content in regulation["content"].items():
-        body += f"{subtitle}{content['description']}\n{content['text']}\n"
+        body += f"{subtitle}. {content['description']}\n{content['text']}\n"
     normalized_reg["body"] = body if body else None
 
     titles = list()
