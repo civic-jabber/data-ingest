@@ -112,6 +112,7 @@ def test_get_regulation(monkeypatch):
         "effective_date": "June 08, 2020",
         "register_date": "June 01, 2020",
         "link": regs.VA_REGULATION.format(site_id="fake_id"),
+        "state": "va",
     }
 
 

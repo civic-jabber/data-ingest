@@ -1,14 +1,72 @@
 import datetime
+import json
 import re
+from time import sleep
+
+import tqdm
 
 from data_ingest.models.regulation import Regulation
 from data_ingest.utils.data_cleaning import clean_whitespace, extract_date
+import data_ingest.utils.database as db
 from data_ingest.utils.scrape import get_page
 
 
 VA_REGISTRY_PAGE = "http://register.dls.virginia.gov/archive.aspx"
 VA_REG_TEMPLATE = "http://register.dls.virginia.gov/toc.aspx?voliss={vol}:{issue}"
 VA_REGULATION = "http://register.dls.virginia.gov/details.aspx?id={site_id}"
+
+_connection = None
+
+
+def _connect():
+    global _connection
+    if not _connection or _connection.closed > 0:
+        _connection = db.connect()
+
+
+def load_va_regulations(sleep_time=1):
+    """Loads the all of the regulations from the VA registry into the Postgres database.
+    If there is already an entry for an issue of the registry, it will be overwritten.
+
+    Parameters
+    ----------
+    sleep_time : int
+        The amount of time to sleep between calls to the registry website
+    """
+    registry_issues = list_all_volumes()
+    db_issues = _get_loaded_issues()
+
+    for volume, issues in registry_issues.items():
+        for issue in issues:
+            if (str(int(volume)), str(int(issue))) not in db_issues:
+                print(f"Loading regulations for Vol. {volume} Issue {issue}.")
+                issue_ids = get_issue_ids(volume, issue)
+                for issue_id in tqdm.tqdm(issue_ids):
+                    regulation = get_regulation(issue_id)
+                    normalized_reg = normalize_regulation(regulation)
+                    db.insert_obj(
+                        normalized_reg, table="regulations", connection=_connection
+                    )
+                    sleep(sleep_time)
+
+
+def _get_loaded_issues():
+    """Pulls a list of issues and volumes that have already been loaded into the
+    database.
+
+    Returns
+    -------
+    issues : list
+        A list of tuples where the first element is the volume and the second element is
+        the issue
+    """
+    _connect()
+    sql = """
+        SELECT DISTINCT volume, issue
+        FROM civic_jabber.regulations
+        WHERE state = 'va'
+    """
+    return db.execute_sql(sql, _connection, select=True)
 
 
 def get_regulation(site_id):
@@ -28,6 +86,7 @@ def get_regulation(site_id):
     url = VA_REGULATION.format(site_id=site_id)
     html = get_page(url)
     regulation = _parse_html(html)
+    regulation["state"] = "va"
     regulation["link"] = url
     return regulation
 
@@ -50,7 +109,7 @@ def normalize_regulation(regulation):
 
     body = str()
     for subtitle, content in regulation["content"].items():
-        body += f"{subtitle}\n{content}\n"
+        body += f"{subtitle}\n{content['text']}\n"
     normalized_reg["body"] = body if body else None
 
     titles = list()
@@ -61,7 +120,7 @@ def normalize_regulation(regulation):
         titles.append(title)
         extra_attributes["title_descriptions"][title] = description
     normalized_reg["titles"] = titles
-    normalized_reg["extra_attributes"] = extra_attributes
+    normalized_reg["extra_attributes"] = json.dumps(extra_attributes)
 
     normalized_reg["effective_date"] = extract_date(regulation["effective_date"])
     normalized_reg["register_date"] = extract_date(regulation["register_date"])
@@ -188,9 +247,12 @@ def _get_regulation_content(html):
             continue
         if para["class"][0] == "vacno0":
             _add_reg_text(regulation, description, text)
-            regulation, description = tuple(para.text.split(".")[:2])
+            if "." in para.text:
+                regulation, description = tuple(para.text.split(".")[:2])
             text = str()
         elif para["class"][0] == "sectind0":
+            if not text:
+                text = str()
             # Remove strikethrough text
             for strikethrough in para.find_all("s"):
                 strikethrough.decompose()
@@ -218,10 +280,10 @@ def _get_issue_data(html):
     """
     issue_desc = html.find("div", class_="currentIssue-DateIssue").text
 
-    start, end = re.search(r"(?<=Vol. )\d{2,3}", issue_desc).span()
+    start, end = re.search(r"(?<=Vol. )\d{1,3}", issue_desc).span()
     volume = issue_desc[start:end]
 
-    start, end = re.search(r"(?<=Iss. )\d{2,3}", issue_desc).span()
+    start, end = re.search(r"(?<=Iss. )\d{1,3}", issue_desc).span()
     issue = issue_desc[start:end]
 
     start, end = re.search(r"(?<= - )(.*)", issue_desc).span()
@@ -250,7 +312,10 @@ def _get_target_metadata(metadata, target):
         if target in line.text:
             if target == "Effective Date" and target.endswith("."):
                 line = line[:-1]
-            return clean_whitespace(line.text.split(":")[1])
+            if ":" in line.text:
+                return clean_whitespace(line.text.split(":")[1])
+            else:
+                return None
 
 
 def _get_summary(html, summary_class="summary"):
@@ -296,11 +361,12 @@ def _get_titles(metadata):
         for item in bold:
             text += item.text
         if text:
-            title, description = tuple(text.split(".")[:2])
-            titles.append(
-                {
-                    "title": clean_whitespace(title),
-                    "description": clean_whitespace(description),
-                }
-            )
+            if "." in text:
+                title, description = tuple(text.split(".")[:2])
+                titles.append(
+                    {
+                        "title": clean_whitespace(title),
+                        "description": clean_whitespace(description),
+                    }
+                )
     return titles

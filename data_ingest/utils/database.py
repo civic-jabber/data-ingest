@@ -12,7 +12,7 @@ def connect():
     return psycopg2.connect(f"dbname={db} user={user} host={host} port={port}")
 
 
-def execute_sql(sql, connection, values=None, commit=True):
+def execute_sql(sql, connection, values=None, select=False, commit=True):
     """Executes a SQL statement against the database.
 
     Parameters
@@ -21,6 +21,8 @@ def execute_sql(sql, connection, values=None, commit=True):
         The SQL statement to execute
     connection : psycopg2.connection
         The database connection
+    select : bool
+        If True, returns the query results as tuples
     commit : bool
         Determines whether or not to commit the database operation upon completion
     """
@@ -28,6 +30,8 @@ def execute_sql(sql, connection, values=None, commit=True):
         connection = connect()
     with connection.cursor() as cursor:
         cursor.execute(sql, values)
+        if select:
+            return cursor.fetchall()
     if commit:
         connection.commit()
 

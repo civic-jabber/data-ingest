@@ -17,4 +17,5 @@ pytz==2020.1              # via pandas
 requests==2.24.0          # via -r requirements/base.in
 six==1.15.0               # via python-dateutil
 soupsieve==2.0.1          # via beautifulsoup4
+tqdm==4.49.0              # via -r requirements/base.in
 urllib3==1.25.10          # via requests

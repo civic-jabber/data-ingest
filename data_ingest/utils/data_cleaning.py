@@ -15,6 +15,8 @@ def clean_whitespace(text):
     clean_text : str
         The text with whitespace replaced
     """
+    if not isinstance(text, str):
+        return None
     return re.sub(r"\s", " ", text.strip())
 
 
@@ -34,6 +36,9 @@ def extract_date(text):
     date : datetime.datetime
         A datetime object
     """
+    if not isinstance(text, str):
+        return None
+
     if MONTH_DAY_YEAR_RE.search(text):
         start, end = MONTH_DAY_YEAR_RE.search(text).span()
         return datetime.datetime.strptime(text[start:end], "%B %d, %Y")
