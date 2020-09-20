@@ -152,7 +152,10 @@ def test_load_va_regulations(monkeypatch):
     mock_listed_issues = {"1": ["1", "2"], "2": ["1"]}
     mock_issue_ids = ["1111", "2222"]
 
-    monkeypatch.setattr(db, "connect", lambda *args, **kwargs: "connection")
+    class MockConnection:
+        closed = 0
+
+    monkeypatch.setattr(db, "connect", lambda *args, **kwargs: MockConnection())
     monkeypatch.setattr(db, "insert_obj", lambda *args, **kwargs: None)
     monkeypatch.setattr(db, "execute_sql", lambda *args, **kwargs: mock_loaded_issues)
     monkeypatch.setattr(regs, "get_issue_ids", lambda volume, issue: mock_issue_ids)
