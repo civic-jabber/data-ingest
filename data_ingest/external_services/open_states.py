@@ -1,11 +1,11 @@
 import os
 import urllib
 
-import requests
+from requests import Session
 import tqdm
 
 
-class OpenStatesSession(requests.Session):
+class OpenStatesSession(Session):
     """Base class for making API calls from across REST APIs."""
 
     base_url = "https://v3.openstates.org/"
