@@ -11,18 +11,32 @@ command.
 make pip-install
 ```
 
-There are also a few Debian packages that are worth installing. For webscraping,
-install the Python LXML parser using the following command:
-
-```
-apt-get install python-lxml
-```
 
 ### Adding dependencies
 
 The package uses `pip-compile` to lock dependencies. If you need to add a new
 dependency, simply update the appropriate `.in` file in the `requirements` folder and
 then run `make pip-compile`.
+
+### Non-Python Dependencies
+
+There are also a few Debian packages that are worth installing. For webscraping,
+install the Python LXML parser using the following command:
+
+```
+apt-get install python-lxml libxml2-dev libxslt-dev
+```
+
+The following packages are required for `newspaper` to recognize `.jpg` images
+```
+apt-get install libjpeg-dev zlib1g-dev libpng-dev
+```
+
+To download the corpora that `newspaper` uses for NLP, run the following:
+```
+curl https://raw.githubusercontent.com/codelucas/newspaper/master/download_corpora.py |
+python
+```
 
 ## Database
 
