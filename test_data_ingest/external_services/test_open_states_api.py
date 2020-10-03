@@ -82,8 +82,9 @@ class MockResponse:
 
 
 def test_get_all_people():
-    open_states.Session.request = lambda self, method, url, *args, **kwargs: MockResponse(
-        200
-    )
-    people = open_states.get_all_people("va", links=True)
+    with modified_environ(**{"OPEN_STATES_API_KEY": "fake-key"}):
+        open_states.Session.request = lambda self, method, url, *args, **kwargs: MockResponse(
+            200
+        )
+        people = open_states.get_all_people("va", links=True)
     assert len(people) == 4
