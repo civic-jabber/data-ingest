@@ -18,3 +18,146 @@ Loudon Now:
   states:
     - va
 
+Fairfax Times:
+  id: 4
+  url: http://www.fairfaxtimes.com/
+  states:
+    - va
+
+Inside NoVA:
+  id: 5
+  url: https://www.insidenova.com/news/
+  states:
+    - va
+
+McLean Connection:
+  id: 6
+  url: http://www.mcleanconnection.com/
+  states:
+    - va
+
+Mt Vernon Gazette:
+  id: 7
+  url: http://www.mountvernongazette.com/
+  states:
+    - va
+
+Herndon Connection:
+  id: 8
+  url: http://www.herndonconnection.com/
+  states:
+    - va
+
+Potomac Almanac:
+  id: 9
+  url: http://www.potomacalmanac.com/
+  states:
+    - md
+
+Reston Connection:
+  id: 10
+  url: http://www.reston-connection.com/
+  states:
+    - va
+
+Springfield Connection:
+  id: 11
+  url: http://www.springfieldconnection.com/
+  states:
+    - va
+
+Vienna Connection:
+  id: 12
+  url: http://www.viennaconnection.com/
+  states:
+    - va
+
+Alexandria Gazette:
+  id: 13
+  url: http://www.alexandriagazette.com/
+  states:
+    - va
+
+Arlington Connection:
+  id: 14
+  url: http://www.arlingtonconnection.com/
+  states:
+    - va
+
+Burke Connection:
+  id: 15
+  url: http://www.burkeconnection.com/
+  states:
+    - va
+
+Centre View:
+  id: 16
+  url: http://www.centre-view.com/
+  states:
+    - va
+
+Fairfax Station Connection:
+  id: 17
+  url: http://www.fairfaxstationconnection.com/
+  states:
+    - va
+
+Great Falls Connection:
+  id: 18
+  url: http://www.greatfallsconnection.com/
+  states:
+    - va
+
+Fairfax Connection:
+  id: 19
+  url: http://www.fairfaxconnection.com/
+  states:
+    - va
+
+Reston Now:
+  id: 20
+  url: https://www.restonnow.com/
+  states:
+    - va
+
+ARL Now:
+  id: 21
+  url: https://www.arlnow.com/
+  states:
+    - va
+
+Arlington Times:
+  id: 22
+  url: https://www.arlingtontimes.com/
+  states:
+    - va
+
+Virginia Pilot:
+  id: 23
+  url: https://www.pilotonline.com/government/virginia/
+  states:
+    - va
+
+Richmond Times Dispatch:
+  id: 24
+  url: https://richmond.com/news/state-and-regional/
+  states:
+    - va
+
+Roanoke Times:
+  id: 25
+  url: https://roanoke.com/news/state-and-regional/#tracking-source=menu-nav
+  states:
+    - va
+
+Washington Post Virginia Politics:
+  id: 26
+  url: https://www.washingtonpost.com/local/virginia/politics/
+  states:
+    - va
+
+WTOP Virginia:
+  id: 27
+  url: https://wtop.com/local/virginia/
+  states:
+    - va
