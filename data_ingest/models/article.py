@@ -15,7 +15,7 @@ class Article(DataModel):
     source_description: str = None
 
     title: str = None
-    text: str = None
+    body: str = None
     summary: str = None
     keywords: list = None
     images: list = None

@@ -10,7 +10,7 @@ MOCK_ARTICLE = {
     "source_brand": "Parrot News",
     "source_description": "A news source for parrots",
     "title": "You'll never believe the size of these parrots!",
-    "text": "Parrts are big and parrts are tall!",
+    "body": "Parrts are big and parrts are tall!",
     "summary": "Parrts are big and parrts are tall!",
     "keywords": ["big", "parrot"],
     "images": ["big_bird.jpg", "little_bird.jpg"],
