@@ -11,6 +11,7 @@ class Article(DataModel):
     extraction_date: datetime.datetime = datetime.datetime.now()
 
     source_id: str = None
+    source_name: str = None
     source_brand: str = None
     source_description: str = None
 

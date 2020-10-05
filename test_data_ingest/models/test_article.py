@@ -7,6 +7,7 @@ MOCK_ARTICLE = {
     "id": "1",
     "extraction_date": datetime.datetime(2020, 6, 8),
     "source_id": "4",
+    "source_name": "Parrot News",
     "source_brand": "Parrot News",
     "source_description": "A news source for parrots",
     "title": "You'll never believe the size of these parrots!",
