@@ -73,8 +73,20 @@ connection = connect()
 
 ```
 
+## Usage
+
+### CLI
+
+IF you are running ingest jobs locally, the easiest way to kick them off is via the API.
+You can load all of the current ingest jobs using the following CLI command:
+
+```
+data_ingest run-ingest
+```
+
 ## Sources
 
 1. [OpenStates](https://openstates.org) - data on legislators and the status of legislation. To use the Open States API, you'll need to request an API key from the site and create an environment variable called `OPEN_STATES_API_KEY`.
 2. [Newspaper](https://newspaper.readthedocs.io) - A Python package for scraping news
    articles.
+

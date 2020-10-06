@@ -1,4 +1,5 @@
 beautifulsoup4
+click
 lxml
 newspaper3k
 pandas
