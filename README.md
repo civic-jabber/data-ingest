@@ -84,6 +84,13 @@ You can load all of the current ingest jobs using the following CLI command:
 data_ingest run-ingest
 ```
 
+To download a list of legislators from a state and save it as a CSV, use the following
+command;
+
+```
+data_ingest people-to-csv --state {state_code} --outfile {filename}
+```
+
 ## Sources
 
 1. [OpenStates](https://openstates.org) - data on legislators and the status of legislation. To use the Open States API, you'll need to request an API key from the site and create an environment variable called `OPEN_STATES_API_KEY`.
