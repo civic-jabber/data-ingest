@@ -1,14 +1,17 @@
 import os
+import re
 import urllib
 
 from requests import Session
 import tqdm
 
+from data_ingest.utils.config import read_config
+
 
 class NewsAPISession(Session):
     """Base class for making API calls from the News API."""
 
-    base_url = "https://newsapi.org/v2"
+    base_url = "https://newsapi.org/v2/"
 
     def __init__(self, api_key=None):
         super().__init__()
@@ -36,3 +39,13 @@ class NewsAPISession(Session):
         if not self.base_url:
             raise ValueError("Base URL for the external service has not been set.")
         return f"{self.base_url}{url}"
+
+
+def get_domains():
+    domains = set()
+    papers = read_config("newspaper")
+    for paper in papers.values():
+        domain = paper["url"].split("//")[1].split("/")[0]
+        domain = domain.replace("www.", "")
+        domains.add(domain)
+    return domains

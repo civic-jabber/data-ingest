@@ -18,11 +18,11 @@ Loudon Now:
   states:
     - va
 
-Fairfax Times:
-  id: 4
-  url: http://www.fairfaxtimes.com/
-  states:
-    - va
+# Fairfax Times:
+#   id: 4
+#   url: http://www.fairfaxtimes.com/
+#   states:
+#     - va
 
 Inside NoVA:
   id: 5
