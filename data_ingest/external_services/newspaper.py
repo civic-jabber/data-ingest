@@ -34,6 +34,10 @@ def load_news():
                 paper_article.build()
             except newspaper.ArticleException:
                 continue
+
+            if not paper_article.summary:
+                continue
+
             article_data = deepcopy(paper_data)
             article_data.update(
                 {
