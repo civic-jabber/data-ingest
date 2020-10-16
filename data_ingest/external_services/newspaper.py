@@ -51,7 +51,7 @@ def load_news(states=None):
         for paper_article in paper.articles:
             try:
                 paper_article.build()
-            except newspaper.ArticleException:
+            except (newspaper.ArticleException, ValueError):
                 continue
 
             if not paper_article.summary:
