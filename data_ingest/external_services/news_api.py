@@ -1,9 +1,6 @@
 import os
-import re
-import urllib
 
 from requests import Session
-import tqdm
 
 from data_ingest.utils.config import read_config
 

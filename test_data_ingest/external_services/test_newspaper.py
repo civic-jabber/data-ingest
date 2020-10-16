@@ -1,6 +1,4 @@
 import newspaper
-import pytest
-
 
 import data_ingest.external_services.newspaper as np
 import data_ingest.utils.database as db

@@ -9,7 +9,7 @@ def test_run_ingest(monkeypatch, capsys):
     monkeypatch.setattr(cli, "load_va_regulations", lambda *args: "VA_REGS")
 
     runner = CliRunner()
-    result = runner.invoke(cli.main, ["run-ingest"])
+    runner.invoke(cli.main, ["run-ingest"])
 
 
 def test_people_to_csv(monkeypatch, tmpdir):
@@ -33,7 +33,7 @@ def test_people_to_csv(monkeypatch, tmpdir):
 
     filename = f"{tmpdir.dirname}/people.csv"
     runner = CliRunner()
-    result = runner.invoke(
+    runner.invoke(
         cli.main, ["people-to-csv", "--state", "va", "--outfile", filename]
     )
 

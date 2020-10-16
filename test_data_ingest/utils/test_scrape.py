@@ -26,4 +26,4 @@ def test_get_page_returns_bs4_object(monkeypatch):
 def test_get_page_raises_with_bad_status_code(monkeypatch):
     monkeypatch.setattr(requests, "get", lambda x: MockResponse(500))
     with pytest.raises(RuntimeError):
-        result = scrape.get_page("https://fake.page")
+        scrape.get_page("https://fake.page")

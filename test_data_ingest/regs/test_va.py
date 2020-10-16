@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 import requests
 
 import data_ingest.regs.va as regs

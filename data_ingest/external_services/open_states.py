@@ -100,5 +100,5 @@ def get_people(state_code, page, per_page=10, links=False):
         return response.json()
     else:
         raise ValueError(
-            f"Open States API call failed with status code: " "{status_code}."
+            f"Open States API call failed with status code: {response.status_code}."
         )

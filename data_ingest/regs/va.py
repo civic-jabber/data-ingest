@@ -1,4 +1,3 @@
-import datetime
 import json
 import re
 from time import sleep
@@ -308,7 +307,6 @@ def _get_target_metadata(metadata, target):
     output : str
         The associated metadata
     """
-    extraction = None
     for line in metadata:
         if target in line.text:
             if target == "Effective Date" and target.endswith("."):

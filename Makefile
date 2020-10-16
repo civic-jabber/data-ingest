@@ -4,6 +4,7 @@
 
 lint:
 	black data_ingest --check
+	flake8
 
 lint-black:
 	black data_ingest --check

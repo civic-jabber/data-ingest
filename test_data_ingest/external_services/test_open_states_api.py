@@ -6,17 +6,17 @@ from data_ingest.utils.environ import modified_environ
 
 def test_session_connects_with_api_key():
     with modified_environ(**{"OPEN_STATES_API_KEY": "fake-key"}):
-        session = open_states.OpenStatesSession()
+        open_states.OpenStatesSession()
 
 
 def test_session_connects_with_api_key_kwarg():
-    session = open_states.OpenStatesSession(api_key="fake-key")
+    open_states.OpenStatesSession(api_key="fake-key")
 
 
 def test_session_raises_with_no_api_key():
     with modified_environ("OPEN_STATES_API_KEY"):
         with pytest.raises(ValueError):
-            session = open_states.OpenStatesSession()
+            open_states.OpenStatesSession()
 
 
 class MockResponse:
