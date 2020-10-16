@@ -59,8 +59,8 @@ def test_load_news_runs(monkeypatch):
 MOCK_USNPL_HOME = """
 <html>
     <div class="row desktop">
-	<a href="/search/state?state=ID">Idaho</a><br>
-	<a href="/search/state?state=IL">Illinois</a><br>
+        <a href="/search/state?state=ID">Idaho</a><br>
+        <a href="/search/state?state=IL">Illinois</a><br>
     </div>
 </html>
 """
@@ -69,7 +69,6 @@ MOCK_SOURCES = [
     {"id": "1", "name": "parrot news", "url": "parrots.com", "states": ["va"]},
     {"id": "2", "name": "dog news", "url": "dogs.com", "states": ["va"]},
 ]
-
 
 
 def test_find_sources(monkeypatch):

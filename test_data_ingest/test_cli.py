@@ -33,9 +33,7 @@ def test_people_to_csv(monkeypatch, tmpdir):
 
     filename = f"{tmpdir.dirname}/people.csv"
     runner = CliRunner()
-    runner.invoke(
-        cli.main, ["people-to-csv", "--state", "va", "--outfile", filename]
-    )
+    runner.invoke(cli.main, ["people-to-csv", "--state", "va", "--outfile", filename])
 
     data = pd.read_csv(filename)
     expected = pd.DataFrame(
