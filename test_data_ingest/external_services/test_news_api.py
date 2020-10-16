@@ -32,8 +32,3 @@ def test_api_key_added_as_param():
         session = news_api.NewsAPISession()
     response = session.get("/parrots")
     assert response.params["apiKey"] == "fake-key"
-
-
-def test_get_domains():
-    domains = news_api.get_domains()
-    assert "richmond.com" in domains
