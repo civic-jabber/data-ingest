@@ -1,6 +1,8 @@
+import pandas as pd
 import pytest
 
 import data_ingest.external_services.open_states as open_states
+import data_ingest.utils.database as db
 from data_ingest.utils.environ import modified_environ
 
 
@@ -88,3 +90,26 @@ def test_get_all_people():
         )
         people = open_states.get_all_people("va", links=True)
     assert len(people) == 4
+
+
+MOCK_LEGISLATOR_CSV = pd.DataFrame({
+    "id": ["1", "2"],
+    "name": ["jabber", "chester"],
+    "current_district": [12, 15],
+    "twitter": ["jabber", "chester"],
+    "current_state": ["va", "va"],
+    "preferred_sound": ["squawk", "bark"]
+})
+
+
+class MockConnection:
+    closed = 1
+
+
+def test_update_legislators(monkeypatch):
+    monkeypatch.setattr(db, "insert_obj", lambda *args, **kwargs: "inserted")
+    monkeypatch.setattr(db, "delete_by_id", lambda *args, **kwargs: "deleted")
+    monkeypatch.setattr(db, "connect", lambda *args, **kwargs: MockConnection())
+    monkeypatch.setattr(pd, "read_csv", lambda url: MOCK_LEGISLATOR_CSV)
+
+    open_states.update_legislators()
