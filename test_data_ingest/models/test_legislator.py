@@ -18,7 +18,7 @@ MOCK_LEGISLATOR = {
     "capitol_email": None,
     "district_email": "district38@senate.virginia.gov",
     "twitter": "chafin4senate",
-    "as_of_date": datetime.datetime(2020, 10, 4)
+    "as_of_date": datetime.datetime(2020, 10, 4),
 }
 
 

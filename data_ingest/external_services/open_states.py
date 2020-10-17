@@ -1,8 +1,23 @@
+import dataclasses
 import os
 import urllib
 
+import pandas as pd
 from requests import Session
 import tqdm
+
+from data_ingest.models.legislator import Legislator
+import data_ingest.utils.database as db
+from data_ingest.utils.config import read_config
+
+
+_connection = None
+
+
+def _connect():
+    global _connection
+    if not _connection or _connection.closed > 0:
+        _connection = db.connect()
 
 
 class OpenStatesSession(Session):
@@ -102,3 +117,46 @@ def get_people(state_code, page, per_page=10, links=False):
         raise ValueError(
             f"Open States API call failed with status code: {response.status_code}."
         )
+
+
+LEGISLATOR_BASE_URL = "https://data.openstates.org/people/current"
+LEGISLATOR_FIELDS = set(f.name for f in dataclasses.fields(Legislator))
+
+
+def update_legislators():
+    """Updates all of the legislators in the database."""
+    states = read_config("states")
+    for state in tqdm.tqdm(states.keys()):
+        legislator_csv_to_db(state)
+
+
+def legislator_csv_to_db(state):
+    """Pulls the latest list of legislators from OpenStates and updates the CivicJabber
+    database accordingly.
+
+    Parameters
+    ----------
+    state : str
+        The two letter code for the state. Case insensitive.
+    """
+    _connect()
+    state = state.lower()
+    url = f"{LEGISLATOR_BASE_URL}/{state}.csv"
+    try:
+        legislators = pd.read_csv(url)
+    except urllib.error.URLError:
+        return
+    # Replaces NaN values with None
+    legislators = legislators.where(pd.notnull(legislators), None)
+    legislators["current_state"] = state
+
+    for i in legislators.index:
+        legislator = dict(legislators.loc[i])
+        legislator["current_district"] = str(legislator["current_district"])
+        for key in list(legislator.keys()):
+            if key not in LEGISLATOR_FIELDS:
+                del legislator[key]
+        legislator = Legislator.from_dict(legislator)
+
+        db.delete_by_id(legislator.id, table="legislators", connection=_connection)
+        db.insert_obj(legislator, table="legislators", connection=_connection)
