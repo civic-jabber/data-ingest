@@ -5,6 +5,7 @@ import pandas as pd
 from data_ingest.external_services.newspaper import load_news
 from data_ingest.external_services.open_states import get_all_people
 from data_ingest.regs.va import load_va_regulations
+from data_ingest.utils.config import read_config
 
 
 @click.group()
@@ -27,6 +28,20 @@ def run_ingest():
 
 
 main.add_command(run_ingest)
+
+
+@click.command("ingest-news")
+@click.option("--start")
+@click.option("--end")
+def ingest_news(start, end):
+    """Ingests news for states in the specified range. States are in alphabetical
+    order."""
+    states = list(read_config("states").keys())
+    states = [state.lower() for state in states]
+    load_news(states)
+
+
+main.add_command(ingest_news)
 
 
 @click.command("people-to-csv")

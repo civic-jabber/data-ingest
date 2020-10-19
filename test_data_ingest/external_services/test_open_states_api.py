@@ -92,14 +92,16 @@ def test_get_all_people():
     assert len(people) == 4
 
 
-MOCK_LEGISLATOR_CSV = pd.DataFrame({
-    "id": ["1", "2"],
-    "name": ["jabber", "chester"],
-    "current_district": [12, 15],
-    "twitter": ["jabber", "chester"],
-    "current_state": ["va", "va"],
-    "preferred_sound": ["squawk", "bark"]
-})
+MOCK_LEGISLATOR_CSV = pd.DataFrame(
+    {
+        "id": ["1", "2"],
+        "name": ["jabber", "chester"],
+        "current_district": [12, 15],
+        "twitter": ["jabber", "chester"],
+        "current_state": ["va", "va"],
+        "preferred_sound": ["squawk", "bark"],
+    }
+)
 
 
 class MockConnection:

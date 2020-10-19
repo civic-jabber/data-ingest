@@ -12,6 +12,13 @@ def test_run_ingest(monkeypatch, capsys):
     runner.invoke(cli.main, ["run-ingest"])
 
 
+def test_ingest_news(monkeypatch, capsys):
+    monkeypatch.setattr(cli, "load_news", lambda *args: "NEWS")
+
+    runner = CliRunner()
+    runner.invoke(cli.main, ["ingest-news", "--start", 0, "--end", 10])
+
+
 def test_people_to_csv(monkeypatch, tmpdir):
     def mock_get_all_people(state, per_page, links):
         return [
