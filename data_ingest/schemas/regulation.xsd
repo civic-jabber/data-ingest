@@ -1,0 +1,54 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:element name="regulation">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="issue" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="volume" type="xs:integer" minOccurs="0" maxOccurs="1" />
+      <xs:element name="registerDate" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="effectiveDate" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="link" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="titles" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="title" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="code" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                  <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="statuatoryAuthority" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="preamble" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="summary" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="body" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="contacts" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="contact" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="firstName" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                  <xs:element name="lastName" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                  <xs:element name="agency" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                  <xs:element name="address" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                  <xs:element name="city" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                  <xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                  <xs:element name="zip" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                  <xs:element name="phone" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                  <xs:element name="email" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:element>
+</xs:schema>
