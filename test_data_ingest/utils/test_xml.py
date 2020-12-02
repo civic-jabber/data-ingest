@@ -45,12 +45,10 @@ def invalid_regulation():
 
 
 def test_parser_validates_valid_reg(valid_regulation):
-    parser = xml.read_xsd("regulation")
-    root = etree.fromstring(valid_regulation, parser)
+    root = xml.read_xml(valid_regulation, "regulation")
     assert isinstance(root, etree._Element)
 
 
 def test_parser_raises_on_invalid_reg(invalid_regulation):
-    parser = xml.read_xsd("regulation")
     with pytest.raises(etree.XMLSyntaxError):
-        root = etree.fromstring(invalid_regulation, parser)
+        xml.read_xml(invalid_regulation, "regulation")

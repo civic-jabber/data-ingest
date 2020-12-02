@@ -7,6 +7,24 @@ PATH = pathlib.Path(__file__).parent.absolute()
 SCHEMA_DIR = os.path.join(PATH, "..", "schemas")
 
 
+def read_xml(string, schema_name):
+    """Reads in XML using the specified schema
+
+    Parameters
+    ----------
+    string : str
+        The XML represented as a string
+    schema_name : str
+        The name of the schema
+
+    Returns
+    -------
+    xml : etree._Element
+    """
+    parser = read_xsd(schema_name)
+    return etree.fromstring(string, parser)
+
+
 def read_xsd(schema_name):
     """Reads an XML schema from the schema directory.
 
