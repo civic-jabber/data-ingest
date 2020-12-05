@@ -76,7 +76,7 @@ TEST_REGULATION = """
     <p class="preamble">Preamble:</p>
     <p>A wonderful preamble!</p>
     <p class="vacno0">VA-001. Good Reg</p>
-    <p class="sectind0">A<s>n</s> good<s>outstanding</s></p>
+    <p class="sectind0">A<s>n</s> good<s><u>outstanding</u></s></p>
     <p class="sectind0">reg</p>
     <p class="vacno0">VA-002. Bad Reg</p>
     <p class="sectind0">A bad</p>
@@ -98,7 +98,10 @@ def test_get_regulation(monkeypatch):
         "issue": "14",
         "volume": "19",
         "content": {
-            "VA-001": {"description": "Good Reg", "text": "A good reg"},
+            "VA-001": {
+                "description": "Good Reg",
+                "text": "A<s>n</s> good<s><u>outstanding</u></s> reg",
+            },
             "VA-002": {"description": "Bad Reg", "text": "A bad reg"},
         },
         "summary": "A wonderful summary!",

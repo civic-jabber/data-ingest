@@ -253,10 +253,7 @@ def _get_regulation_content(html):
         elif para["class"][0] == "sectind0":
             if not text:
                 text = str()
-            # Remove strikethrough text
-            for strikethrough in para.find_all("s"):
-                strikethrough.decompose()
-            text += f"{para.text} "
+            text += f"{para.decode_contents()} "
     _add_reg_text(regulation, description, text)
     return content
 
