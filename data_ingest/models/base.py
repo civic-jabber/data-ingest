@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 import json
 
+from bs4 import BeautifulSoup
+
 
 @dataclass
 class DataModel:
@@ -51,9 +53,10 @@ class DataModel:
         filename : str
             The filename for the serialized JSON output.
         """
-        xml = self.xml_template()
+        # We use the bs4 parser to prettify the XML prior to writing
+        xml = BeautifulSoup(self.xml_template(), "xml")
         with open(filename, "w") as f:
-            f.write(xml)
+            f.write(xml.prettify())
 
     def xml_template(self):
         """Converts the data object to XML. The XML templates are in the schemas

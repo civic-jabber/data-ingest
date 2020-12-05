@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import json
 
+from bs4 import BeautifulSoup
 import pytest
 
 from data_ingest.models.base import DataModel
@@ -46,7 +47,8 @@ def test_date_model_serializes_to_xml(tmpdir):
 
     with open(filename, "r") as f:
         xml = f.read()
-    assert xml == data_model.xml_template()
+
+    assert xml == BeautifulSoup(data_model.xml_template(), "xml").prettify()
 
 
 def test_base_raises_with_no_xml_method():
