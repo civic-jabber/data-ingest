@@ -1,10 +1,16 @@
 import datetime
 
+from data_ingest.models.contact import Contact
 from data_ingest.models.regulation import Regulation
 
 
 MOCK_REGULATION = {
     "id": "1",
+    "chapter": "Chapter 4",
+    "chapter_description": "Fish regulations",
+    "notice": "Notice: this is a great reg!",
+    "title": "14-1831",
+    "status": "Final Regulation",
     "state": "VA",
     "issue": "14",
     "volume": "19",
@@ -14,7 +20,7 @@ MOCK_REGULATION = {
     "summary": "This is such a great reg",
     "preamble": "This is such a great reg",
     "titles": [{"title": "VA-001", "description": "Fish"}],
-    "contact": "Jabber Robinson, jabber@robinson.com",
+    "contacts": Contact.from_dict({"first_name": "Jabber", "last_name": "Robinson"}),
     "authority": "Parrot law, subsection 4",
     "effective_date": datetime.datetime(2020, 6, 8),
     "register_date": datetime.datetime(2020, 7, 20),

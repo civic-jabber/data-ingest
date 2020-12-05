@@ -4,6 +4,7 @@ from time import sleep
 
 import tqdm
 
+from data_ingest.models.contact import Contact
 from data_ingest.models.regulation import Regulation
 from data_ingest.utils.data_cleaning import clean_whitespace, extract_date
 import data_ingest.utils.database as db
@@ -111,6 +112,12 @@ def normalize_regulation(regulation):
     for subtitle, content in regulation["content"].items():
         body += f"{subtitle}. {content['description']}\n{content['text']}\n"
     normalized_reg["body"] = body if body else None
+
+    contact = regulation.get("contact", None)
+    if contact:
+        first_name, last_name = tuple(contact.split(",")[0].split())
+        contact = Contact.from_dict({"first_name": first_name, "last_name": last_name})
+        normalized_reg["contacts"] = [contact]
 
     titles = list()
     extra_attributes = {"title_descriptions": dict()}

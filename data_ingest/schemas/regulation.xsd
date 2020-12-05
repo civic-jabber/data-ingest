@@ -5,19 +5,18 @@
       <xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1"/>
       <xs:element name="issue" type="xs:integer" minOccurs="0" maxOccurs="1"/>
       <xs:element name="volume" type="xs:integer" minOccurs="0" maxOccurs="1" />
+      <xs:element name="notice" type="xs:string" minOccurs="0" maxOccurs="1" />
       <xs:element name="registerDate" type="xs:string" minOccurs="0" maxOccurs="1" />
       <xs:element name="effectiveDate" type="xs:string" minOccurs="0" maxOccurs="1" />
       <xs:element name="link" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="status" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="chapter" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="chapterDescription" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="title" type="xs:string" minOccurs="0" maxOccurs="1" />
       <xs:element name="titles" minOccurs="0" maxOccurs="unbounded">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="title" maxOccurs="unbounded">
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="code" type="xs:string" minOccurs="0" maxOccurs="1"/>
-                  <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
-                </xs:sequence>
-              </xs:complexType>
+            <xs:element name="title" type="xs:string" maxOccurs="unbounded">
             </xs:element>
           </xs:sequence>
         </xs:complexType>

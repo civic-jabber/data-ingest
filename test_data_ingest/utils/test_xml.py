@@ -12,12 +12,10 @@ def valid_regulation():
             <issue>1</issue>
             <titles>
                 <title>
-                    <code>4VAC20-252</code>
-                    <description>Parrots</description>
+                    4VAC20-252
                 </title>
                 <title>
-                    <code>4VAC20-254</code>
-                    <description>Dogs</description>
+                    4VAC20-254
                 </title>
             </titles>
         </regulation>

@@ -3,6 +3,7 @@ import datetime
 import uuid
 
 from data_ingest.models.base import DataModel
+from data_ingest.utils.xml import get_jinja_template
 
 
 @dataclass
@@ -12,15 +13,20 @@ class Regulation(DataModel):
     issue: str = None
     volume: str = None
 
+    notice: str = None
     regulation_number: str = None
     description: str = None
     summary: str = None
     preamble: str = None
     body: str = None
 
+    status: str = None
+    title: str = None
+    chapter: str = None
+    chapter_description: str = None
     titles: list = None
     authority: str = None
-    contact: str = None
+    contacts: list = None
 
     register_date: datetime.datetime = None
     effective_date: datetime.datetime = None
@@ -29,3 +35,8 @@ class Regulation(DataModel):
     link: str = None
 
     extra_attributes: dict = None
+
+    def xml_template(self):
+        data = self.to_dict(drop_empty=True)
+        template = get_jinja_template("regulation")
+        return template.render(data=data).strip()
