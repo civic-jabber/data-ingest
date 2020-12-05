@@ -56,7 +56,12 @@ def test_get_issue(monkeypatch):
 TEST_REGULATION = """
 <html>
     <div class="currentIssue-DateIssue">Vol. 19 Iss. 14 - June 01, 2020</div>
-    <p class="textbl"><u>Titles of Regulation:s</b></p>
+    <div id="ContentPlaceHolder1_divTitle" class="titleDescription">TITLE 4. CONSERVATION AND NATURAL RESOURCES</div>
+    <div id="ContentPlaceHolder1_divDescription" class="chapDescription">MARINE RESOURCES COMMISSION</div>
+    <div id="ContentPlaceHolder1_divChapter" class="chapDescription">Chapter 252</div>
+    <div id="ContentPlaceHolder1_divStatus" class="statusDescription">Final Regulation</div>
+    <p class="notice0"><u>REGISTRAR'S NOTICE:</u> Be aware of the notice!</p>
+    <p class="textbl"><u>Titles of Regulations</b></p>
     <p class="textbl"><b> VA-001. Fish</b></p>
     <p class="textbl"><strong> VA-002. Lobsters</strong></p>
     <p class="textbl">
@@ -95,6 +100,11 @@ def test_get_regulation(monkeypatch):
 
     regulation = regs.get_regulation("fake_id")
     assert regulation == {
+        "chapter": "Chapter 252",
+        "chapter_description": "MARINE RESOURCES COMMISSION",
+        "status": "Final Regulation",
+        "title": "TITLE 4. CONSERVATION AND NATURAL RESOURCES",
+        "notice": "<u>REGISTRAR'S NOTICE:</u> Be aware of the notice!",
         "issue": "14",
         "volume": "19",
         "content": {

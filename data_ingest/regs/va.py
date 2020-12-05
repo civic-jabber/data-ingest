@@ -202,9 +202,15 @@ def _parse_html(html):
     reg["issue"] = issue
     reg["volume"] = volume
 
+    reg["notice"] = _get_notice(html)
     reg["content"] = _get_regulation_content(html)
     reg["summary"] = _get_summary(html)
     reg["preamble"] = _get_summary(html, summary_class="preamble")
+
+    reg["status"] = _get_title_info(html, "Status")
+    reg["title"] = _get_title_info(html, "Title")
+    reg["chapter"] = _get_title_info(html, "Chapter")
+    reg["chapter_description"] = _get_title_info(html, "Description")
 
     reg["titles"] = _get_titles(metadata)
     reg["authority"] = _get_target_metadata(metadata, "Authority")
@@ -213,6 +219,42 @@ def _parse_html(html):
     reg["register_date"] = date
     reg["effective_date"] = _get_target_metadata(metadata, "Effective Date")
     return reg
+
+
+def _get_title_info(html, key):
+    """Pulls title information for the regulation.
+
+    Parameters
+    ----------
+    html : bs4.BeautifulSoupt
+        The bs4 representation of the site
+    key : str
+        The last element of the class name for the div to target
+
+    Returns
+    -------
+    title_info : str
+        The relevant title information
+    """
+    div = html.find("div", {"id": f"ContentPlaceHolder1_div{key}"})
+    return div.text if div else None
+
+
+def _get_notice(html):
+    """Pulls title information for the regulation.
+
+    Parameters
+    ----------
+    html : bs4.BeautifulSoupt
+        The bs4 representation of the site
+
+    Returns
+    -------
+    notice : str
+        The string of the notice
+    """
+    para = html.find("p", class_="notice0")
+    return para.decode_contents() if para else None
 
 
 def _get_regulation_content(html):
