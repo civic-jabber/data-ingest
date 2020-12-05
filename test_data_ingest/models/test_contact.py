@@ -1,5 +1,3 @@
-import datetime
-
 from data_ingest.models.contact import Contact
 
 

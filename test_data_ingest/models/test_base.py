@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 import json
 
+import pytest
+
 from data_ingest.models.base import DataModel
 
 
@@ -25,3 +27,10 @@ def test_date_model_serializes_to_json(tmpdir):
     with open(filename, "r") as f:
         data_json = json.load(f)
     assert data_json == data_model.to_dict()
+
+
+def test_base_raises_with_no_xml_method():
+    data = {"first_name": "Matt", "last_name": "Robinson"}
+    data_model = MockDataModel.from_dict(data)
+    with pytest.raises(NotImplementedError):
+        data_model.to_xml()
