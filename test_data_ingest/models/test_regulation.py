@@ -16,7 +16,7 @@ MOCK_REGULATION = {
     "volume": "19",
     "regulation_number": "VA-001",
     "description": "The best reg ever!",
-    "body": "You really don't want to read this whole thing ...",
+    "body": "You <s>really</s> don't want to read this whole thing ...",
     "summary": "This is such a great reg",
     "preamble": "This is such a great reg",
     "titles": [{"title": "VA-001", "description": "Fish"}],
@@ -50,7 +50,7 @@ REGULATION_XML = """
   <preamble>This is such a great reg</preamble>
   <summary>This is such a great reg</summary>
   <body>
-    You really don't want to read this whole thing ...
+    You <s>really</s> don't want to read this whole thing ...
   </body>
 <contacts>
   <contact>
