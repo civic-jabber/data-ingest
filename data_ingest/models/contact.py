@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from data_ingest.models.base import DataModel
+from data_ingest.utils.xml import get_jinja_template
 
 
 @dataclass
@@ -14,3 +15,8 @@ class Contact(DataModel):
     zip_code: str = None
     phone: str = None
     email: str = None
+
+    def xml_template(self):
+        data = self.to_dict(drop_empty=True)
+        template = get_jinja_template("contact")
+        return template.render(data=data).strip()
