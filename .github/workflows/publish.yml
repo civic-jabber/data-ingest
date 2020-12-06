@@ -20,7 +20,6 @@ jobs:
     - name: Install dependencies
       run: |
         make pip-install
-        pip install setuptools wheel twine
     - name: Test
       run: make test
     - name: Build and publish
@@ -28,6 +27,4 @@ jobs:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        make package
-        twine upload dist/*
-        
+        make publish

@@ -67,7 +67,7 @@ If you do not set an environmental variable, it will assume a default value. You
 connect to the database with:
 
 ```python
-from data_ingest.utils.connection import connect
+from civic_jabber_ingest.utils.connection import connect
 
 connection = connect()
 
@@ -81,14 +81,14 @@ IF you are running ingest jobs locally, the easiest way to kick them off is via 
 You can load all of the current ingest jobs using the following CLI command:
 
 ```
-data_ingest run-ingest
+civic_jabber_ingest run-ingest
 ```
 
 To download a list of legislators from a state and save it as a CSV, use the following
 command;
 
 ```
-data_ingest people-to-csv --state {state_code} --outfile {filename}
+civic_jabber_ingest people-to-csv --state {state_code} --outfile {filename}
 ```
 
 ## Sources

@@ -1,0 +1,19 @@
+import datetime
+
+import civic_jabber_ingest.utils.data_cleaning as clean
+
+
+def test_extract_date():
+    assert clean.extract_date("August 1, 2020") == datetime.datetime(2020, 8, 1)
+
+
+def test_extract_date_works_with_period():
+    assert clean.extract_date("August 1, 2020.") == datetime.datetime(2020, 8, 1)
+
+
+def test_extract_date_returns_none_with_non_string():
+    assert clean.extract_date(2020) is None
+
+
+def test_clean_whitespace():
+    clean.clean_whitespace("  parrots  ") == "parrots"

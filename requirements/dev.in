@@ -3,4 +3,7 @@ ipython
 jupyter
 notebook>=6.1.5
 
-
+# publish
+setuptools
+wheel
+twine
