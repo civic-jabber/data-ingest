@@ -195,3 +195,12 @@ def test_get_loaded_issues(tmpdir):
     with modified_environ(**env):
         loaded_issues = regs._get_loaded_issues(tmpdir.dirname)
         assert loaded_issues == {("01", "01"), ("01", "02"), ("02", "01"), ("03", "01")}
+
+
+def test_parse_contact():
+    example = "Jenn Parsons, 215-867-5309, jann@jenn.com"
+    first_name, last_name, email, phone = regs._parse_contact(example)
+    assert first_name == "Jenn"
+    assert last_name == "Parsons"
+    assert email == "jann@jenn.com"
+    assert phone == "215-867-5309"

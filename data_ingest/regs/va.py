@@ -7,7 +7,12 @@ import tqdm
 
 from data_ingest.models.contact import Contact
 from data_ingest.models.regulation import Regulation
-from data_ingest.utils.data_cleaning import clean_whitespace, extract_date
+from data_ingest.utils.data_cleaning import (
+    clean_whitespace,
+    extract_date,
+    extract_email,
+    extract_phone_number,
+)
 import data_ingest.utils.config as config
 from data_ingest.utils.scrape import get_page
 
@@ -130,8 +135,15 @@ def normalize_regulation(regulation):
 
     contact = regulation.get("contact", None)
     if contact:
-        first_name, last_name = tuple(contact.split(",")[0].split())
-        contact = Contact.from_dict({"first_name": first_name, "last_name": last_name})
+        first_name, last_name, email, phone = _parse_contact(contact)
+        contact = Contact.from_dict(
+            {
+                "first_name": first_name,
+                "last_name": last_name,
+                "email": email,
+                "phone": phone,
+            }
+        )
         normalized_reg["contacts"] = [contact]
 
     titles = list()
@@ -428,3 +440,31 @@ def _get_titles(metadata):
                     }
                 )
     return titles
+
+
+def _parse_contact(contact):
+    """Extracts pertinent information from the contact string
+
+    Parameters
+    ----------
+    contact : str
+        A string with contact information
+
+    Returns
+    -------
+    first_name : str
+    last_name : str
+    email : str
+    phone_number : str
+    """
+    # Assumes name appears first in the list
+    first_name, last_name = None, None
+    name = contact.split(",")[0]
+    if len(name.split()) > 1:
+        first_name = name.split()[0]
+        last_name = " ".join(name.split()[1:])
+
+    email = extract_email(contact)
+    phone_number = extract_phone_number(contact)
+
+    return first_name, last_name, email, phone_number
