@@ -33,8 +33,7 @@ def _get_va_regulation_dir():
 
 
 def load_va_regulations(sleep_time=1):
-    """Loads the all of the regulations from the VA registry into the Postgres database.
-    If there is already an entry for an issue of the registry, it will be overwritten.
+    """Downloads and stores VA regulations locally as XML files.
 
     Parameters
     ----------
