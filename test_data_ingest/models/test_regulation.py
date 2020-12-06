@@ -43,7 +43,10 @@ REGULATION_XML = """
   <chapterDescription></chapterDescription>
   <title>14-1831</title>
 <titles>
-  <title>VA-001: Fish</title>
+  <title>
+    <code>VA-001</code>
+    <description>Fish</description>
+  </title>
 </titles>
   <statuatoryAuthority>Parrot law, subsection 4</statuatoryAuthority>
   <description>The best reg ever!</description>

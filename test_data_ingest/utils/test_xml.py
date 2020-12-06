@@ -7,19 +7,38 @@ import data_ingest.utils.xml as xml
 @pytest.fixture
 def valid_regulation():
     return """
-        <regulation>
-            <state>VA</state>
-            <issue>1</issue>
-            <titles>
-                <title>
-                    4VAC20-252
-                </title>
-                <title>
-                    4VAC20-254
-                </title>
-            </titles>
-        </regulation>
-    """
+<regulation>
+  <state>VA</state>
+  <issue>14</issue>
+  <volume>19</volume>
+  <notice>Notice: this is a great reg!</notice>
+  <effectiveDate>2020-06-08</effectiveDate>
+  <link>https://thebestregs.com</link>
+  <status>Final Regulation</status>
+  <chapter>Chapter 4</chapter>
+  <chapterDescription></chapterDescription>
+  <title>14-1831</title>
+<titles>
+  <title>
+    <code>VA-001</code>
+    <description>Fish</description>
+  </title>
+</titles>
+  <statuatoryAuthority>Parrot law, subsection 4</statuatoryAuthority>
+  <description>The best reg ever!</description>
+  <preamble>This is such a great reg</preamble>
+  <summary>This is such a great reg</summary>
+  <body>
+    You <s>really</s> don't want to read this whole thing ...
+  </body>
+<contacts>
+  <contact>
+<firstName>Jabber</firstName>
+<lastName>Robinson</lastName>
+  </contact>
+</contacts>
+</regulation>
+""".strip()
 
 
 @pytest.fixture

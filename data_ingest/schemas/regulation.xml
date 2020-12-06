@@ -35,7 +35,10 @@
 {% if "titles" in data %}
 <titles>
   {% for title in data["titles"] %}
-  <title>{{ title["title"] }}: {{ title["description"] }}</title>
+  <title>
+    <code>{{ title["title"] }}</code>
+    <description>{{ title["description"] }}</description>
+  </title>
   {% endfor %}
 </titles>
 {% endif %}
