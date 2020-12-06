@@ -1,4 +1,5 @@
 import json
+import os
 import re
 from time import sleep
 
@@ -7,7 +8,7 @@ import tqdm
 from data_ingest.models.contact import Contact
 from data_ingest.models.regulation import Regulation
 from data_ingest.utils.data_cleaning import clean_whitespace, extract_date
-import data_ingest.utils.database as db
+import data_ingest.utils.config as config
 from data_ingest.utils.scrape import get_page
 
 
@@ -15,13 +16,15 @@ VA_REGISTRY_PAGE = "http://register.dls.virginia.gov/archive.aspx"
 VA_REG_TEMPLATE = "http://register.dls.virginia.gov/toc.aspx?voliss={vol}:{issue}"
 VA_REGULATION = "http://register.dls.virginia.gov/details.aspx?id={site_id}"
 
-_connection = None
+
+SUB_DIRECTORY_RE = re.compile(r"\S*/va/\d{1,2}$")
 
 
-def _connect():
-    global _connection
-    if not _connection or _connection.closed > 0:
-        _connection = db.connect()
+def _get_va_regulation_dir():
+    va_dir = os.path.join(config.local_regs_directory(), "va")
+    if not os.path.exists(va_dir):
+        os.mkdir(va_dir)
+    return va_dir
 
 
 def load_va_regulations(sleep_time=1):
@@ -33,41 +36,53 @@ def load_va_regulations(sleep_time=1):
     sleep_time : int
         The amount of time to sleep between calls to the registry website
     """
-    _connect()
     registry_issues = list_all_volumes()
-    db_issues = _get_loaded_issues()
+    loaded_issues = _get_loaded_issues()
+    issues_to_process = registry_issues.difference(loaded_issues)
 
-    for volume, issues in registry_issues.items():
-        for issue in issues:
-            if (str(int(volume)), str(int(issue))) not in db_issues:
-                print(f"Loading regulations for Vol. {volume} Issue {issue}.")
-                issue_ids = get_issue_ids(volume, issue)
-                for issue_id in tqdm.tqdm(issue_ids):
-                    regulation = get_regulation(issue_id)
-                    normalized_reg = normalize_regulation(regulation)
-                    db.insert_obj(
-                        normalized_reg, table="regulations", connection=_connection
-                    )
-                    sleep(sleep_time)
+    for volume, issue in issues_to_process:
+        print(f"Loading regulations for Vol. {volume} Issue {issue}.")
+
+        volume_dir = os.path.join(_get_va_regulation_dir(), volume)
+        if not os.path.exists(volume_dir):
+            os.mkdir(volume_dir)
+
+        issue_dir = os.path.join(volume_dir, issue)
+        if not os.path.exists(issue_dir):
+            os.mkdir(issue_dir)
+
+        issue_ids = get_issue_ids(volume, issue)
+        for issue_id in tqdm.tqdm(issue_ids):
+            filename = os.path.join(issue_dir, f"{issue_id}.xml")
+            regulation = normalize_regulation(get_regulation(issue_id))
+            regulation.to_xml(filename)
+            sleep(sleep_time)
 
 
-def _get_loaded_issues():
-    """Pulls a list of issues and volumes that have already been loaded into the
-    database.
+def _get_loaded_issues(directory=None):
+    """Pulls a list of issues and volumes that have already been loaded in the local
+    filesystem
+
+    Parameters
+    ----------
+    directory : str
+        The directory to check for loaded issues.
 
     Returns
     -------
-    issues : list
-        A list of tuples where the first element is the volume and the second element is
+    issues : set
+        A set of tuples where the first element is the volume and the second element is
         the issue
     """
-    _connect()
-    sql = """
-        SELECT DISTINCT volume, issue
-        FROM civic_jabber.regulations
-        WHERE state = 'va'
-    """
-    return db.execute_sql(sql, _connection, select=True)
+    directory = _get_va_regulation_dir() if not directory else directory
+    loaded_issues = set()
+    for directory, subdirectories, _ in os.walk(directory):
+        # Look for directories that look like ../va/1, not ../va or ../va/1/2
+        if SUB_DIRECTORY_RE.search(directory) is not None:
+            volume = directory.split("/")[-1]
+            for issue in subdirectories:
+                loaded_issues.add((volume, issue))
+    return loaded_issues
 
 
 def get_regulation(site_id):
@@ -148,7 +163,7 @@ def list_all_volumes():
     volumes : dict
         A dictionary where the volumes are the keys and the issues are list entries.
     """
-    volumes = dict()
+    volumes = set()
     html = get_page(VA_REGISTRY_PAGE)
     details = html.find_all(class_="archiveDetail")
     for line in details:
@@ -156,9 +171,7 @@ def list_all_volumes():
         for link in links:
             if link.text != "PDF":
                 volume, issue = tuple(link["href"].split("=")[-1].split(":"))
-                issues = volumes.get(volume, [])
-                issues.append(issue)
-                volumes[volume] = issues
+                volumes.add((volume, issue))
                 break
     return volumes
 

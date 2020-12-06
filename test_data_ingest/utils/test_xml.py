@@ -57,6 +57,7 @@ def invalid_regulation():
                     <description>Dogs</description>
                 </title>
             </titles>
+            <koala>Kenny Koala</koala>
         </regulation>
     """
 

@@ -1,7 +1,9 @@
+import os
+
 import requests
 
 import data_ingest.regs.va as regs
-import data_ingest.utils.database as db
+from data_ingest.utils.environ import modified_environ
 
 
 TEST_ARCHIVE = """
@@ -29,7 +31,7 @@ def test_list_all_volumes(monkeypatch):
 
     monkeypatch.setattr(requests, "get", lambda *args, **kwargs: MockResponse())
     volumes = regs.list_all_volumes()
-    assert volumes == {"35": ["6", "5"], "34": ["1"]}
+    assert volumes == {("35", "6"), ("35", "5"), ("34", "1")}
 
 
 TEST_ISSUE = """
@@ -159,21 +161,37 @@ def test_normalize_regulation():
     assert isinstance(normalized_reg, regs.Regulation)
 
 
-def test_load_va_regulations(monkeypatch):
-    mock_loaded_issues = [("1", "1"), ("1", "2")]
-    mock_listed_issues = {"1": ["1", "2"], "2": ["1"]}
+def test_load_va_regulations(tmpdir, monkeypatch):
+    mock_loaded_issues = {("01", "01"), ("01", "02")}
+    mock_listed_issues = {("01", "01"), ("01", "02"), ("02", "01")}
     mock_issue_ids = ["1111", "2222"]
 
-    class MockConnection:
-        closed = 0
-
-    monkeypatch.setattr(db, "connect", lambda *args, **kwargs: MockConnection())
-    monkeypatch.setattr(db, "insert_obj", lambda *args, **kwargs: None)
-    monkeypatch.setattr(db, "execute_sql", lambda *args, **kwargs: mock_loaded_issues)
     monkeypatch.setattr(regs, "get_issue_ids", lambda volume, issue: mock_issue_ids)
     monkeypatch.setattr(regs, "get_regulation", lambda issue_id: MOCK_REGULATION)
+    monkeypatch.setattr(regs, "_get_loaded_issues", lambda *args: mock_loaded_issues)
     monkeypatch.setattr(
         regs, "list_all_volumes", lambda *args, **kwargs: mock_listed_issues
     )
 
-    regs.load_va_regulations(sleep_time=0)
+    env = {"CIVIC_JABBER_DATA_DIR": tmpdir.dirname}
+    with modified_environ(**env):
+        regs.load_va_regulations(sleep_time=0)
+
+    assert os.path.exists(f"{tmpdir.dirname}/regs/va/02/01/1111.xml")
+    assert os.path.exists(f"{tmpdir.dirname}/regs/va/02/01/2222.xml")
+
+
+def test_get_loaded_issues(tmpdir):
+    os.mkdir(f"{tmpdir.dirname}/va")
+    os.mkdir(f"{tmpdir.dirname}/va/01")
+    os.mkdir(f"{tmpdir.dirname}/va/02")
+    os.mkdir(f"{tmpdir.dirname}/va/03")
+    os.mkdir(f"{tmpdir.dirname}/va/01/01")
+    os.mkdir(f"{tmpdir.dirname}/va/01/02")
+    os.mkdir(f"{tmpdir.dirname}/va/02/01")
+    os.mkdir(f"{tmpdir.dirname}/va/03/01")
+
+    env = {"CIVIC_JABBER_DATA_DIR": tmpdir.dirname}
+    with modified_environ(**env):
+        loaded_issues = regs._get_loaded_issues(tmpdir.dirname)
+        assert loaded_issues == {("01", "01"), ("01", "02"), ("02", "01"), ("03", "01")}
