@@ -1,5 +1,6 @@
 beautifulsoup4
 click
+Jinja2
 lxml
 newspaper3k
 pandas

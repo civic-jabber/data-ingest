@@ -1,0 +1,75 @@
+<regulation>
+{% if "state" in data %}
+  <state>{{ data["state"] }}</state>
+{% endif %}
+{% if "issue" in data %}
+  <issue>{{ data["issue"] }}</issue>
+{% endif %}
+{% if "volume" in data %}
+  <volume>{{ data["volume"] }}</volume>
+{% endif %}
+{% autoescape false %}
+{% if "notice" in data %}
+  <notice>{{ data["notice"] }}</notice>
+{% endif %}
+{% endautoescape %}
+{% if "registerDate" in data %}
+  <registerDate>{{ data["register_date"].date().isoformat() }}</registerDate>
+{% endif %}
+{% if "effective_date" in data %}
+  <effectiveDate>{{ data["effective_date"].date().isoformat() }}</effectiveDate>
+{% endif %}
+{% if "link" in data %}
+  <link>{{ data["link"] }}</link>
+{% endif %}
+{% if "status" in data %}
+  <status>{{ data["status"] }}</status>
+{% endif %}
+{% if "chapter" in data %}
+  <chapter>{{ data["chapter"] }}</chapter>
+{% endif %}
+{% if "chapter_description" in data %}
+  <chapterDescription>{{ data["chapter_descriptoin"] }}</chapterDescription>
+{% endif %}
+{% if "title" in data %}
+  <title>{{ data["title"] }}</title>
+{% endif %}
+{% if "titles" in data %}
+<titles>
+  {% for title in data["titles"] %}
+  <title>
+    <code>{{ title.get("code", "None") }}</code>
+    <description>{{ title.get("description", "None") }}</description>
+  </title>
+  {% endfor %}
+</titles>
+{% endif %}
+{% if "authority" in data %}
+  <statuatoryAuthority>{{ data["authority"] }}</statuatoryAuthority>
+{% endif %}
+{% if "description" in data %}
+  <description>{{ data["description"] }}</description>
+{% endif %}
+{% if "preamble" in data %}
+  <preamble>{{ data["preamble"] }}</preamble>
+{% endif %}
+{% if "summary" in data %}
+  <summary>{{ data["summary"] }}</summary>
+{% endif %}
+{% autoescape false %}
+{% if "body" in data %}
+  <body>
+    {{ data["body"] }}
+  </body>
+{% endif %}
+<contacts>
+{% if "contacts" in data %}
+  <contact>
+{% for contact in data["contacts"] %}
+{{ contact.xml_template() }}
+{% endfor %}
+  </contact>
+{% endif %}
+{% endautoescape %}
+</contacts>
+</regulation>

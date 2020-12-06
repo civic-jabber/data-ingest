@@ -1,12 +1,18 @@
-import json
+import os
 import re
 from time import sleep
 
 import tqdm
 
+from data_ingest.models.contact import Contact
 from data_ingest.models.regulation import Regulation
-from data_ingest.utils.data_cleaning import clean_whitespace, extract_date
-import data_ingest.utils.database as db
+from data_ingest.utils.data_cleaning import (
+    clean_whitespace,
+    extract_date,
+    extract_email,
+    extract_phone_number,
+)
+import data_ingest.utils.config as config
 from data_ingest.utils.scrape import get_page
 
 
@@ -14,59 +20,72 @@ VA_REGISTRY_PAGE = "http://register.dls.virginia.gov/archive.aspx"
 VA_REG_TEMPLATE = "http://register.dls.virginia.gov/toc.aspx?voliss={vol}:{issue}"
 VA_REGULATION = "http://register.dls.virginia.gov/details.aspx?id={site_id}"
 
-_connection = None
+
+SUB_DIRECTORY_RE = re.compile(r"\S*/va/\d{1,2}$")
 
 
-def _connect():
-    global _connection
-    if not _connection or _connection.closed > 0:
-        _connection = db.connect()
+def _get_va_regulation_dir():
+    va_dir = os.path.join(config.local_regs_directory(), "va")
+    if not os.path.exists(va_dir):
+        os.mkdir(va_dir)
+    return va_dir
 
 
 def load_va_regulations(sleep_time=1):
-    """Loads the all of the regulations from the VA registry into the Postgres database.
-    If there is already an entry for an issue of the registry, it will be overwritten.
+    """Downloads and stores VA regulations locally as XML files.
 
     Parameters
     ----------
     sleep_time : int
         The amount of time to sleep between calls to the registry website
     """
-    _connect()
     registry_issues = list_all_volumes()
-    db_issues = _get_loaded_issues()
+    loaded_issues = _get_loaded_issues()
+    issues_to_process = registry_issues.difference(loaded_issues)
 
-    for volume, issues in registry_issues.items():
-        for issue in issues:
-            if (str(int(volume)), str(int(issue))) not in db_issues:
-                print(f"Loading regulations for Vol. {volume} Issue {issue}.")
-                issue_ids = get_issue_ids(volume, issue)
-                for issue_id in tqdm.tqdm(issue_ids):
-                    regulation = get_regulation(issue_id)
-                    normalized_reg = normalize_regulation(regulation)
-                    db.insert_obj(
-                        normalized_reg, table="regulations", connection=_connection
-                    )
-                    sleep(sleep_time)
+    for volume, issue in issues_to_process:
+        print(f"Loading regulations for Vol. {volume} Issue {issue}.")
+
+        volume_dir = os.path.join(_get_va_regulation_dir(), volume)
+        if not os.path.exists(volume_dir):
+            os.mkdir(volume_dir)
+
+        issue_dir = os.path.join(volume_dir, issue)
+        if not os.path.exists(issue_dir):
+            os.mkdir(issue_dir)
+
+        issue_ids = get_issue_ids(volume, issue)
+        for issue_id in tqdm.tqdm(issue_ids):
+            filename = os.path.join(issue_dir, f"{issue_id}.xml")
+            regulation = normalize_regulation(get_regulation(issue_id))
+            regulation.to_xml(filename)
+            sleep(sleep_time)
 
 
-def _get_loaded_issues():
-    """Pulls a list of issues and volumes that have already been loaded into the
-    database.
+def _get_loaded_issues(directory=None):
+    """Pulls a list of issues and volumes that have already been loaded in the local
+    filesystem
+
+    Parameters
+    ----------
+    directory : str
+        The directory to check for loaded issues.
 
     Returns
     -------
-    issues : list
-        A list of tuples where the first element is the volume and the second element is
+    issues : set
+        A set of tuples where the first element is the volume and the second element is
         the issue
     """
-    _connect()
-    sql = """
-        SELECT DISTINCT volume, issue
-        FROM civic_jabber.regulations
-        WHERE state = 'va'
-    """
-    return db.execute_sql(sql, _connection, select=True)
+    directory = _get_va_regulation_dir() if not directory else directory
+    loaded_issues = set()
+    for directory, subdirectories, _ in os.walk(directory):
+        # Look for directories that look like ../va/1, not ../va or ../va/1/2
+        if SUB_DIRECTORY_RE.search(directory) is not None:
+            volume = directory.split("/")[-1]
+            for issue in subdirectories:
+                loaded_issues.add((volume, issue))
+    return loaded_issues
 
 
 def get_regulation(site_id):
@@ -112,15 +131,18 @@ def normalize_regulation(regulation):
         body += f"{subtitle}. {content['description']}\n{content['text']}\n"
     normalized_reg["body"] = body if body else None
 
-    titles = list()
-    extra_attributes = {"title_descriptions": dict()}
-    for item in regulation["titles"]:
-        title = item["title"]
-        description = item["description"]
-        titles.append(title)
-        extra_attributes["title_descriptions"][title] = description
-    normalized_reg["titles"] = titles
-    normalized_reg["extra_attributes"] = json.dumps(extra_attributes)
+    contact = regulation.get("contact", None)
+    if contact:
+        first_name, last_name, email, phone = _parse_contact(contact)
+        contact = Contact.from_dict(
+            {
+                "first_name": first_name,
+                "last_name": last_name,
+                "email": email,
+                "phone": phone,
+            }
+        )
+        normalized_reg["contacts"] = [contact]
 
     normalized_reg["effective_date"] = extract_date(regulation["effective_date"])
     normalized_reg["register_date"] = extract_date(regulation["register_date"])
@@ -141,7 +163,7 @@ def list_all_volumes():
     volumes : dict
         A dictionary where the volumes are the keys and the issues are list entries.
     """
-    volumes = dict()
+    volumes = set()
     html = get_page(VA_REGISTRY_PAGE)
     details = html.find_all(class_="archiveDetail")
     for line in details:
@@ -149,9 +171,7 @@ def list_all_volumes():
         for link in links:
             if link.text != "PDF":
                 volume, issue = tuple(link["href"].split("=")[-1].split(":"))
-                issues = volumes.get(volume, [])
-                issues.append(issue)
-                volumes[volume] = issues
+                volumes.add((volume, issue))
                 break
     return volumes
 
@@ -202,9 +222,15 @@ def _parse_html(html):
     reg["issue"] = issue
     reg["volume"] = volume
 
+    reg["notice"] = _get_notice(html)
     reg["content"] = _get_regulation_content(html)
     reg["summary"] = _get_summary(html)
     reg["preamble"] = _get_summary(html, summary_class="preamble")
+
+    reg["status"] = _get_title_info(html, "Status")
+    reg["title"] = _get_title_info(html, "Title")
+    reg["chapter"] = _get_title_info(html, "Chapter")
+    reg["chapter_description"] = _get_title_info(html, "Description")
 
     reg["titles"] = _get_titles(metadata)
     reg["authority"] = _get_target_metadata(metadata, "Authority")
@@ -213,6 +239,42 @@ def _parse_html(html):
     reg["register_date"] = date
     reg["effective_date"] = _get_target_metadata(metadata, "Effective Date")
     return reg
+
+
+def _get_title_info(html, key):
+    """Pulls title information for the regulation.
+
+    Parameters
+    ----------
+    html : bs4.BeautifulSoupt
+        The bs4 representation of the site
+    key : str
+        The last element of the class name for the div to target
+
+    Returns
+    -------
+    title_info : str
+        The relevant title information
+    """
+    div = html.find("div", {"id": f"ContentPlaceHolder1_div{key}"})
+    return div.text if div else None
+
+
+def _get_notice(html):
+    """Pulls title information for the regulation.
+
+    Parameters
+    ----------
+    html : bs4.BeautifulSoupt
+        The bs4 representation of the site
+
+    Returns
+    -------
+    notice : str
+        The string of the notice
+    """
+    para = html.find("p", class_="notice0")
+    return para.decode_contents() if para else None
 
 
 def _get_regulation_content(html):
@@ -253,10 +315,7 @@ def _get_regulation_content(html):
         elif para["class"][0] == "sectind0":
             if not text:
                 text = str()
-            # Remove strikethrough text
-            for strikethrough in para.find_all("s"):
-                strikethrough.decompose()
-            text += f"{para.text} "
+            text += f"{para.decode_contents()} "
     _add_reg_text(regulation, description, text)
     return content
 
@@ -364,8 +423,36 @@ def _get_titles(metadata):
                 title, description = tuple(text.split(".")[:2])
                 titles.append(
                     {
-                        "title": clean_whitespace(title),
+                        "code": clean_whitespace(title),
                         "description": clean_whitespace(description),
                     }
                 )
     return titles
+
+
+def _parse_contact(contact):
+    """Extracts pertinent information from the contact string
+
+    Parameters
+    ----------
+    contact : str
+        A string with contact information
+
+    Returns
+    -------
+    first_name : str
+    last_name : str
+    email : str
+    phone_number : str
+    """
+    # Assumes name appears first in the list
+    first_name, last_name = None, None
+    name = contact.split(",")[0]
+    if len(name.split()) > 1:
+        first_name = name.split()[0]
+        last_name = " ".join(name.split()[1:])
+
+    email = extract_email(contact)
+    phone_number = extract_phone_number(contact)
+
+    return first_name, last_name, email, phone_number
