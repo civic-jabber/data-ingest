@@ -49,9 +49,6 @@ pygments==2.6.1           # via ipython, jupyter-console, nbconvert, qtconsole, 
 pyparsing==2.4.7          # via packaging
 pyrsistent==0.16.0        # via jsonschema
 python-dateutil==2.8.1    # via jupyter-client
-pywin32-ctypes==0.2.0     # via keyring
-pywin32==300              # via jupyter-core
-pywinpty==0.5.7           # via terminado
 pyzmq==19.0.2             # via jupyter-client, notebook, qtconsole
 qtconsole==4.7.5          # via jupyter
 qtpy==1.9.0               # via qtconsole
