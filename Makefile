@@ -32,7 +32,15 @@ pip-install:
 	pip install -r requirements/test.txt
 	pip install -e .
 
+################
+# Publish
+################
 
+package:
+	rm -rf dist/*
+	python3 setup.py sdist
+	python3 setup.py bdist_wheel
+	
 ################
 # Database
 ################
