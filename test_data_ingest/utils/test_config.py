@@ -22,7 +22,7 @@ def test_news_ids_are_unique():
 def test_local_regs_get_dir_from_env(tmpdir):
     env = {"CIVIC_JABBER_DATA_DIR": tmpdir.dirname}
     with modified_environ(**env):
-        assert config.local_regs_directory() == tmpdir.dirname
+        assert config.local_regs_directory() == path.join(tmpdir.dirname, "regs")
 
 
 def test_local_regs_makes_dir_with_no_env_var(monkeypatch, tmpdir):

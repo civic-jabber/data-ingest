@@ -37,15 +37,15 @@ def local_regs_directory():
     local_directory : path-like
         The directory for storing locally downloaded files
     """
-    local_directory = os.environ.get("CIVIC_JABBER_DATA_DIR", None)
-    if not local_directory:
+    civic_jabber_dir = os.environ.get("CIVIC_JABBER_DATA_DIR", None)
+    if not civic_jabber_dir:
         civic_jabber_dir = os.path.join(os.path.expanduser("~"), ".civic_jabber")
 
         if not os.path.exists(civic_jabber_dir):
             os.mkdir(civic_jabber_dir)
 
-        local_directory = os.path.join(civic_jabber_dir, "regs")
-        if not os.path.exists(local_directory):
-            os.mkdir(local_directory)
+    local_directory = os.path.join(civic_jabber_dir, "regs")
+    if not os.path.exists(local_directory):
+        os.mkdir(local_directory)
 
     return local_directory
