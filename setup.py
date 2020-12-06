@@ -4,7 +4,7 @@ from civic_jabber_ingest.__version__ import __version__
 
 
 requirements = 'requirements/base.txt'
-install_requires = [] # Examples: ["gunicorn", "docutils>=0.3", "lxml==0.5a7"]
+install_requires = []
 with open(requirements) as f:
     install_requires = f.read().splitlines()
 
