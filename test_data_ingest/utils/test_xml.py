@@ -1,5 +1,4 @@
 import pytest
-from lxml import etree
 
 import data_ingest.utils.xml as xml
 
@@ -63,10 +62,8 @@ def invalid_regulation():
 
 
 def test_parser_validates_valid_reg(valid_regulation):
-    root = xml.read_xml(valid_regulation, "regulation")
-    assert isinstance(root, etree._Element)
+    assert xml.validate_xml(valid_regulation, "regulation") is True
 
 
 def test_parser_raises_on_invalid_reg(invalid_regulation):
-    with pytest.raises(etree.XMLSyntaxError):
-        xml.read_xml(invalid_regulation, "regulation")
+    assert xml.validate_xml(invalid_regulation, "regulation") is False

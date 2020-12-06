@@ -26,6 +26,28 @@ def read_xml(string, schema_name):
     return etree.fromstring(string, parser)
 
 
+def validate_xml(string, schema_name):
+    """Validates an XML string against the specified schema.
+
+    Parameters
+    ----------
+    string : str
+        The XML represented as a string
+    schema_name : str
+        The name of the schema
+
+    Returns
+    -------
+    valid : bool
+        True if the XML is valid, else False
+    """
+    try:
+        read_xml(string, schema_name)
+        return True
+    except etree.XMLSyntaxError:
+        return False
+
+
 def read_xsd(schema_name):
     """Reads an XML schema from the schema directory.
 
