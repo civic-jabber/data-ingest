@@ -2,7 +2,12 @@ from dataclasses import dataclass
 import datetime
 import uuid
 
+<<<<<<< HEAD:civic_jabber_ingest/models/regulation.py
 from civic_jabber_ingest.models.base import DataModel
+=======
+from data_ingest.models.base import DataModel
+from data_ingest.utils.xml import get_jinja_template, validate_xml
+>>>>>>> master:data_ingest/models/regulation.py
 
 
 @dataclass
@@ -12,15 +17,20 @@ class Regulation(DataModel):
     issue: str = None
     volume: str = None
 
+    notice: str = None
     regulation_number: str = None
     description: str = None
     summary: str = None
     preamble: str = None
     body: str = None
 
+    status: str = None
+    title: str = None
+    chapter: str = None
+    chapter_description: str = None
     titles: list = None
     authority: str = None
-    contact: str = None
+    contacts: list = None
 
     register_date: datetime.datetime = None
     effective_date: datetime.datetime = None
@@ -29,3 +39,13 @@ class Regulation(DataModel):
     link: str = None
 
     extra_attributes: dict = None
+
+    def xml_template(self):
+        data = self.to_dict(drop_empty=True)
+        template = get_jinja_template("regulation")
+        xml = template.render(data=data).strip()
+        if validate_xml(xml, "regulation"):
+            return xml
+        else:
+            print(f"WARNING: XML for regulation {self.id} is invalid")
+            return None

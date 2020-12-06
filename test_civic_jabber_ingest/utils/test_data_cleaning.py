@@ -17,3 +17,13 @@ def test_extract_date_returns_none_with_non_string():
 
 def test_clean_whitespace():
     clean.clean_whitespace("  parrots  ") == "parrots"
+
+
+def test_extract_phone_number():
+    example = "Jenn Walker, 215-867-5309, jenn@walker.com"
+    assert clean.extract_phone_number(example) == "215-867-5309"
+
+
+def test_extract_email():
+    example = "Jenn Walker, 215-867-5309, jenn@walker.com"
+    assert clean.extract_email(example) == "jenn@walker.com"

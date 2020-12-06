@@ -1,0 +1,24 @@
+{%- if "first_name" in data -%}
+<firstName>{{ data["first_name"] }}</firstName>
+{% endif %}
+{%- if "last_name" in data -%}
+<lastName>{{ data["last_name"] }}</lastName>
+{% endif %}
+{%- if "agency" in data -%}
+<agency>{{ data["agency"] }}</agency>
+{% endif %}
+{%- if "city" in data -%}
+<city>{{ data["city"] }}</city>
+{% endif %}
+{%- if "state" in data -%}
+<state>{{ data["state"] }}</state>
+{% endif %}
+{%- if "zip_code" in data -%}
+<zipCode>{{ data["zip_code"] }}</zipCode>
+{% endif %}
+{%- if "phone" in data -%}
+<phone>{{ data["phone"] }}</phone>
+{% endif %}
+{%- if "email" in data -%}
+<email>{{ data["email"] }}</email>
+{% endif %}

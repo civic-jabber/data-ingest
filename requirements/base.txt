@@ -13,8 +13,10 @@ feedfinder2==0.0.4        # via newspaper3k
 feedparser==6.0.1         # via newspaper3k
 idna==2.10                # via requests, tldextract
 jieba3k==0.35.1           # via newspaper3k
+jinja2==2.11.2            # via -r requirements/base.in
 joblib==0.17.0            # via nltk
 lxml==4.5.2               # via -r requirements/base.in, newspaper3k
+markupsafe==1.1.1         # via jinja2
 newspaper3k==0.2.8        # via -r requirements/base.in
 nltk==3.5                 # via newspaper3k
 numpy==1.19.1             # via pandas

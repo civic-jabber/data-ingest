@@ -42,3 +42,51 @@ def extract_date(text):
     if MONTH_DAY_YEAR_RE.search(text):
         start, end = MONTH_DAY_YEAR_RE.search(text).span()
         return datetime.datetime.strptime(text[start:end], "%B %d, %Y")
+
+
+EMAIL_RE = re.compile(r"[a-zA-Z]*@[a-z]*\.(com|gov)")
+
+
+def extract_email(text):
+    """Extracts an email from a string
+
+    Parameters
+    ----------
+    text : str
+        The text to clean
+
+    Returns
+    -------
+    email : str
+        The email
+    """
+    if not isinstance(text, str):
+        return None
+
+    if EMAIL_RE.search(text):
+        start, end = EMAIL_RE.search(text).span()
+        return text[start:end]
+
+
+PHONE_NUMBER_RE = re.compile(r"\d{3}-\d{3}-\d{4}")
+
+
+def extract_phone_number(text):
+    """Extracts an phone number from a string
+
+    Parameters
+    ----------
+    text : str
+        The text to clean
+
+    Returns
+    -------
+    phone_number : str
+        The phone number
+    """
+    if not isinstance(text, str):
+        return None
+
+    if PHONE_NUMBER_RE.search(text):
+        start, end = PHONE_NUMBER_RE.search(text).span()
+        return text[start:end]
