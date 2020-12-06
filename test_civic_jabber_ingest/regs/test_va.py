@@ -2,8 +2,8 @@ import os
 
 import requests
 
-import data_ingest.regs.va as regs
-from data_ingest.utils.environ import modified_environ
+import civic_jabber_ingest.regs.va as regs
+from civic_jabber_ingest.utils.environ import modified_environ
 
 
 TEST_ARCHIVE = """

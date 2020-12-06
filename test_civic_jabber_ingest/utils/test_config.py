@@ -1,7 +1,7 @@
 import os.path as path
 
-import data_ingest.utils.config as config
-from data_ingest.utils.environ import modified_environ
+import civic_jabber_ingest.utils.config as config
+from civic_jabber_ingest.utils.environ import modified_environ
 
 
 def test_news_config_is_well_formed():

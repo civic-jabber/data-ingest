@@ -1,4 +1,4 @@
-from data_ingest.models.contact import Contact
+from civic_jabber_ingest.models.contact import Contact
 
 
 MOCK_CONTACT = {

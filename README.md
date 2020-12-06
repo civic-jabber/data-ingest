@@ -48,14 +48,14 @@ setting the `CIVIC_JABBER_DATA_DIR` environmental variable.
 You can load all of the current ingest jobs using the following CLI command:
 
 ```
-data_ingest run-ingest
+civic_jabber_ingest run-ingest
 ```
 
 To download a list of legislators from a state and save it as a CSV, use the following
 command;
 
 ```
-data_ingest people-to-csv --state {state_code} --outfile {filename}
+civic_jabber_ingest people-to-csv --state {state_code} --outfile {filename}
 ```
 
 ## Sources

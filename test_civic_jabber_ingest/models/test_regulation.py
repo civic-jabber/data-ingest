@@ -1,7 +1,7 @@
 import datetime
 
-from data_ingest.models.contact import Contact
-from data_ingest.models.regulation import Regulation
+from civic_jabber_ingest.models.contact import Contact
+from civic_jabber_ingest.models.regulation import Regulation
 
 
 MOCK_REGULATION = {

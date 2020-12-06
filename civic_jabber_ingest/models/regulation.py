@@ -2,8 +2,8 @@ from dataclasses import dataclass
 import datetime
 import uuid
 
-from data_ingest.models.base import DataModel
-from data_ingest.utils.xml import get_jinja_template, validate_xml
+from civic_jabber_ingest.models.base import DataModel
+from civic_jabber_ingest.utils.xml import get_jinja_template, validate_xml
 
 
 @dataclass

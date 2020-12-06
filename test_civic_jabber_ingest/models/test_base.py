@@ -4,8 +4,8 @@ import json
 from bs4 import BeautifulSoup
 import pytest
 
-from data_ingest.models.base import DataModel
-from data_ingest.utils.xml import get_jinja_template
+from civic_jabber_ingest.models.base import DataModel
+from civic_jabber_ingest.utils.xml import get_jinja_template
 
 
 @dataclass
