@@ -18,11 +18,8 @@ def run_ingest():
     """Runs all of the ingest commands that are current implemented. Currently, this
     includes:
 
-    1. News
-    2. Regulations for VA
+    1. Regulations for VA
     """
-    print("Loading news ...")
-    load_news()
     print("Loading VA regs ...")
     load_va_regulations()
 
