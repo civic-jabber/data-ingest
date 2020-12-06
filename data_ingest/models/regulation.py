@@ -3,7 +3,7 @@ import datetime
 import uuid
 
 from data_ingest.models.base import DataModel
-from data_ingest.utils.xml import get_jinja_template
+from data_ingest.utils.xml import get_jinja_template, validate_xml
 
 
 @dataclass
@@ -39,4 +39,8 @@ class Regulation(DataModel):
     def xml_template(self):
         data = self.to_dict(drop_empty=True)
         template = get_jinja_template("regulation")
-        return template.render(data=data).strip()
+        xml = template.render(data=data).strip()
+        if validate_xml(xml, "regulation"):
+            return xml
+        else:
+            raise ValueError(f"XML for regulation {id} is invalid")
