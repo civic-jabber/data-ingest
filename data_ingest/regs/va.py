@@ -1,4 +1,3 @@
-import json
 import os
 import re
 from time import sleep
@@ -144,16 +143,6 @@ def normalize_regulation(regulation):
             }
         )
         normalized_reg["contacts"] = [contact]
-
-    titles = list()
-    extra_attributes = {"title_descriptions": dict()}
-    for item in regulation["titles"]:
-        title = item["title"]
-        description = item["description"]
-        titles.append(title)
-        extra_attributes["title_descriptions"][title] = description
-    normalized_reg["titles"] = titles
-    normalized_reg["extra_attributes"] = json.dumps(extra_attributes)
 
     normalized_reg["effective_date"] = extract_date(regulation["effective_date"])
     normalized_reg["register_date"] = extract_date(regulation["register_date"])
@@ -434,7 +423,7 @@ def _get_titles(metadata):
                 title, description = tuple(text.split(".")[:2])
                 titles.append(
                     {
-                        "title": clean_whitespace(title),
+                        "code": clean_whitespace(title),
                         "description": clean_whitespace(description),
                     }
                 )

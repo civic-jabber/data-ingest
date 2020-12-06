@@ -119,8 +119,8 @@ def test_get_regulation(monkeypatch):
         "summary": "A wonderful summary!",
         "preamble": "A wonderful preamble!",
         "titles": [
-            {"title": "VA-001", "description": "Fish"},
-            {"title": "VA-002", "description": "Lobsters"},
+            {"code": "VA-001", "description": "Fish"},
+            {"code": "VA-002", "description": "Lobsters"},
         ],
         "contact": "Jabber Robinson, jabber@robinson.com",
         "authority": "Parrot law, subsection 4",

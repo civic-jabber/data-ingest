@@ -8,7 +8,6 @@
 {% if "volume" in data %}
   <volume>{{ data["volume"] }}</volume>
 {% endif %}
-
 {% autoescape false %}
 {% if "notice" in data %}
   <notice>{{ data["notice"] }}</notice>
@@ -39,7 +38,8 @@
 <titles>
   {% for title in data["titles"] %}
   <title>
-    <code>{{ title }}</code>
+    <code>{{ title.get("code", "None") }}</code>
+    <description>{{ title.get("description", "None") }}</description>
   </title>
   {% endfor %}
 </titles>

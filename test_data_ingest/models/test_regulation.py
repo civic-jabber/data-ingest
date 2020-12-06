@@ -8,7 +8,7 @@ MOCK_REGULATION = {
     "id": "1",
     "chapter": "Chapter 4",
     "chapter_description": "Fish regulations",
-    "notice": "Notice: this is a great reg!",
+    "notice": "<u>Notice:</u> this is a great reg!",
     "title": "14-1831",
     "status": "Final Regulation",
     "state": "VA",
@@ -19,7 +19,7 @@ MOCK_REGULATION = {
     "body": "You <s>really</s> don't want to read this whole thing ...",
     "summary": "This is such a great reg",
     "preamble": "This is such a great reg",
-    "titles": [{"title": "VA-001", "description": "Fish"}],
+    "titles": [{"code": "VA-001", "description": "Fish"}],
     "contacts": [Contact.from_dict({"first_name": "Jabber", "last_name": "Robinson"})],
     "authority": "Parrot law, subsection 4",
     "effective_date": datetime.datetime(2020, 6, 8),
@@ -35,7 +35,7 @@ REGULATION_XML = """
   <state>VA</state>
   <issue>14</issue>
   <volume>19</volume>
-  <notice>Notice: this is a great reg!</notice>
+  <notice><u>Notice:</u> this is a great reg!</notice>
   <effectiveDate>2020-06-08</effectiveDate>
   <link>https://thebestregs.com</link>
   <status>Final Regulation</status>
