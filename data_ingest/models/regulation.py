@@ -43,4 +43,5 @@ class Regulation(DataModel):
         if validate_xml(xml, "regulation"):
             return xml
         else:
-            raise ValueError(f"XML for regulation {id} is invalid")
+            print(f"WARNING: XML for regulation {self.id} is invalid")
+            return None

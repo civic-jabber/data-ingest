@@ -8,9 +8,12 @@
 {% if "volume" in data %}
   <volume>{{ data["volume"] }}</volume>
 {% endif %}
+
+{% autoescape false %}
 {% if "notice" in data %}
   <notice>{{ data["notice"] }}</notice>
 {% endif %}
+{% endautoescape %}
 {% if "registerDate" in data %}
   <registerDate>{{ data["register_date"].date().isoformat() }}</registerDate>
 {% endif %}
@@ -36,8 +39,7 @@
 <titles>
   {% for title in data["titles"] %}
   <title>
-    <code>{{ title["title"] }}</code>
-    <description>{{ title["description"] }}</description>
+    <code>{{ title }}</code>
   </title>
   {% endfor %}
 </titles>
