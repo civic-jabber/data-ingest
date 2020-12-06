@@ -4,12 +4,6 @@ from time import sleep
 
 import tqdm
 
-<<<<<<< HEAD:civic_jabber_ingest/regs/va.py
-from civic_jabber_ingest.models.regulation import Regulation
-from civic_jabber_ingest.utils.data_cleaning import clean_whitespace, extract_date
-import civic_jabber_ingest.utils.database as db
-from civic_jabber_ingest.utils.scrape import get_page
-=======
 from data_ingest.models.contact import Contact
 from data_ingest.models.regulation import Regulation
 from data_ingest.utils.data_cleaning import (
@@ -20,7 +14,6 @@ from data_ingest.utils.data_cleaning import (
 )
 import data_ingest.utils.config as config
 from data_ingest.utils.scrape import get_page
->>>>>>> master:data_ingest/regs/va.py
 
 
 VA_REGISTRY_PAGE = "http://register.dls.virginia.gov/archive.aspx"

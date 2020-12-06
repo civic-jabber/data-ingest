@@ -2,12 +2,8 @@ from dataclasses import dataclass
 import datetime
 import uuid
 
-<<<<<<< HEAD:civic_jabber_ingest/models/regulation.py
-from civic_jabber_ingest.models.base import DataModel
-=======
 from data_ingest.models.base import DataModel
 from data_ingest.utils.xml import get_jinja_template, validate_xml
->>>>>>> master:data_ingest/models/regulation.py
 
 
 @dataclass

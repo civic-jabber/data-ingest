@@ -2,13 +2,8 @@ import os
 
 import requests
 
-<<<<<<< HEAD:test_civic_jabber_ingest/regs/test_va.py
-import civic_jabber_ingest.regs.va as regs
-import civic_jabber_ingest.utils.database as db
-=======
 import data_ingest.regs.va as regs
 from data_ingest.utils.environ import modified_environ
->>>>>>> master:test_data_ingest/regs/test_va.py
 
 
 TEST_ARCHIVE = """

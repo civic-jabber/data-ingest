@@ -1,11 +1,7 @@
 import datetime
 
-<<<<<<< HEAD:test_civic_jabber_ingest/models/test_regulation.py
-from civic_jabber_ingest.models.regulation import Regulation
-=======
 from data_ingest.models.contact import Contact
 from data_ingest.models.regulation import Regulation
->>>>>>> master:test_data_ingest/models/test_regulation.py
 
 
 MOCK_REGULATION = {

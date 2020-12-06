@@ -1,11 +1,7 @@
-<<<<<<< HEAD:test_civic_jabber_ingest/utils/test_config.py
-import civic_jabber_ingest.utils.config as config
-=======
 import os.path as path
 
 import data_ingest.utils.config as config
 from data_ingest.utils.environ import modified_environ
->>>>>>> master:test_data_ingest/utils/test_config.py
 
 
 def test_news_config_is_well_formed():

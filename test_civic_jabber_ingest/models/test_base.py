@@ -1,15 +1,11 @@
 from dataclasses import dataclass
 import json
 
-<<<<<<< HEAD:test_civic_jabber_ingest/models/test_base.py
-from civic_jabber_ingest.models.base import DataModel
-=======
 from bs4 import BeautifulSoup
 import pytest
 
 from data_ingest.models.base import DataModel
 from data_ingest.utils.xml import get_jinja_template
->>>>>>> master:test_data_ingest/models/test_base.py
 
 
 @dataclass
