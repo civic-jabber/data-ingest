@@ -30,3 +30,4 @@ jobs:
       run: |
         make package
         twine upload dist/*
+        
