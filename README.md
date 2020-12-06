@@ -37,8 +37,41 @@ To download the corpora that `newspaper` uses for NLP, run the following:
 curl https://raw.githubusercontent.com/codelucas/newspaper/master/download_corpora.py |
 python
 ```
+## Usage
+
+### CLI
+
+If you are running ingest jobs locally, the easiest way to kick them off is via the API.
+By default, regulations will be stored in `~/.civic_jabber/regs` directory if you
+run the ingest locally. You can choose to store the files in a different location by
+setting the `CIVIC_JABBER_DATA_DIR` environmental variable.
+You can load all of the current ingest jobs using the following CLI command:
+
+```
+data_ingest run-ingest
+```
+
+To download a list of legislators from a state and save it as a CSV, use the following
+command;
+
+```
+data_ingest people-to-csv --state {state_code} --outfile {filename}
+```
+
+## Sources
+
+Regulations are pulled in from the state registry for each state. Additionally, there
+is code for pulling information from the following data sources. We're not doing much
+with these now as we are currently focus on pulling and storing regulations.
+
+1. [OpenStates](https://openstates.org) - data on legislators and the status of legislation. To use the Open States API, you'll need to request an API key from the site and create an environment variable called `OPEN_STATES_API_KEY`.
+2. [Newspaper](https://newspaper.readthedocs.io) - A Python package for scraping news
+   articles.
 
 ## Database
+
+***Note:*** We are not using the Postgres database for anything right now. However,
+we'll leave the documentation here because we might use it again sometime down the line.
 
 ### Initializing the Database
 
@@ -72,28 +105,3 @@ from data_ingest.utils.connection import connect
 connection = connect()
 
 ```
-
-## Usage
-
-### CLI
-
-IF you are running ingest jobs locally, the easiest way to kick them off is via the API.
-You can load all of the current ingest jobs using the following CLI command:
-
-```
-data_ingest run-ingest
-```
-
-To download a list of legislators from a state and save it as a CSV, use the following
-command;
-
-```
-data_ingest people-to-csv --state {state_code} --outfile {filename}
-```
-
-## Sources
-
-1. [OpenStates](https://openstates.org) - data on legislators and the status of legislation. To use the Open States API, you'll need to request an API key from the site and create an environment variable called `OPEN_STATES_API_KEY`.
-2. [Newspaper](https://newspaper.readthedocs.io) - A Python package for scraping news
-   articles.
-
