@@ -3,19 +3,19 @@
 #######################
 
 lint:
-	black data_ingest --check
+	black civic_jabber_ingest --check
 	flake8
 
 lint-black:
-	black data_ingest --check
-	black test_data_ingest --check
+	black civic_jabber_ingest --check
+	black test_civic_jabber_ingest --check
 
 tidy:
-	black data_ingest
-	black test_data_ingest
+	black civic_jabber_ingest
+	black test_civic_jabber_ingest
 
 test:
-	pytest test_data_ingest --cov=data_ingest -vv
+	pytest test_civic_jabber_ingest --cov=civic_jabber_ingest -vv
 
 ################
 # Install
@@ -32,7 +32,19 @@ pip-install:
 	pip install -r requirements/test.txt
 	pip install -e .
 
+################
+# Publish
+################
 
+package:
+	rm -rf dist/*
+	python3 setup.py sdist
+	python3 setup.py bdist_wheel
+
+publish:
+	make package
+	twine upload dist/*
+	
 ################
 # Database
 ################
