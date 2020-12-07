@@ -8,8 +8,6 @@ install_requires = []
 with open(requirements) as f:
     install_requires = f.read().splitlines()
 
-print(find_packages())
-
 setup(
     name="civic_jabber_ingest",
     description="Utilities for ingesting legislative data",
@@ -18,5 +16,9 @@ setup(
     packages=find_packages(),
     version=__version__,
     entry_points={"console_scripts": "civic_jabber_ingest=civic_jabber_ingest.cli:main"},
-    install_requires=install_requires
+    install_requires=install_requires,
+    package_data={
+        "civic_jabber_ingest.config": ["*.yml"],
+        "civic_jabber_ingest.schemas": ["*.xml", "*.xsd"],
+    }
 )
