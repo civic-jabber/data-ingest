@@ -12,6 +12,7 @@ from civic_jabber_ingest.utils.data_cleaning import (
     extract_email,
     extract_phone_number,
 )
+import civic_jabber_ingest.utils.aws as aws
 import civic_jabber_ingest.utils.config as config
 from civic_jabber_ingest.utils.scrape import get_page
 
@@ -22,6 +23,7 @@ VA_REGULATION = "http://register.dls.virginia.gov/details.aspx?id={site_id}"
 
 
 SUB_DIRECTORY_RE = re.compile(r"\S*/va/\d{1,2}$")
+S3_PREFIX_RE = re.compile(r"\d{2}\/\d{2}")
 
 
 def _get_va_regulation_dir():
@@ -31,16 +33,20 @@ def _get_va_regulation_dir():
     return va_dir
 
 
-def load_va_regulations(sleep_time=1):
+def load_va_regulations(sleep_time=1, local=True, dev=False):
     """Downloads and stores VA regulations locally as XML files.
 
     Parameters
     ----------
     sleep_time : int
         The amount of time to sleep between calls to the registry website
+    local : bool
+        If True, checks the local directory for loaded issues. Otherwise, checks S3
+    dev : bool
+        If True, uses the dev S3 bucket
     """
     registry_issues = list_all_volumes()
-    loaded_issues = _get_loaded_issues()
+    loaded_issues = _get_loaded_issues(local=local, dev=dev)
     issues_to_process = registry_issues.difference(loaded_issues)
 
     for volume, issue in issues_to_process:
@@ -61,8 +67,11 @@ def load_va_regulations(sleep_time=1):
             regulation.to_xml(filename)
             sleep(sleep_time)
 
+    if not local:
+        aws.sync_state("va")
 
-def _get_loaded_issues(directory=None):
+
+def _get_loaded_issues(directory=None, local=True, dev=True):
     """Pulls a list of issues and volumes that have already been loaded in the local
     filesystem
 
@@ -70,6 +79,10 @@ def _get_loaded_issues(directory=None):
     ----------
     directory : str
         The directory to check for loaded issues.
+    local : bool
+        If True, checks the local directory for loaded issues. Otherwise, checks S3
+    dev : bool
+        If True, uses the dev S3 bucket
 
     Returns
     -------
@@ -79,12 +92,21 @@ def _get_loaded_issues(directory=None):
     """
     directory = _get_va_regulation_dir() if not directory else directory
     loaded_issues = set()
-    for directory, subdirectories, _ in os.walk(directory):
-        # Look for directories that look like ../va/1, not ../va or ../va/1/2
-        if SUB_DIRECTORY_RE.search(directory) is not None:
-            volume = directory.split("/")[-1]
-            for issue in subdirectories:
+    if local:
+        for directory, subdirectories, _ in os.walk(directory):
+            # Look for directories that look like ../va/1, not ../va or ../va/1/2
+            if SUB_DIRECTORY_RE.search(directory) is not None:
+                volume = directory.split("/")[-1]
+                for issue in subdirectories:
+                    loaded_issues.add((volume, issue))
+    else:
+        files = aws.s3_ls(prefix="va", dev=dev)
+        for filename in files:
+            result = S3_PREFIX_RE.search(filename)
+            if result:
+                volume, issue = tuple(result.group().split("/"))
                 loaded_issues.add((volume, issue))
+
     return loaded_issues
 
 

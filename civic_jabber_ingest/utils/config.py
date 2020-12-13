@@ -49,3 +49,19 @@ def local_regs_directory():
         os.mkdir(local_directory)
 
     return local_directory
+
+
+def regs_s3_bucket(dev=False):
+    """Sets the S3 bucket where the extracted regulations will live.
+
+    Parameters
+    ----------
+    dev : bool
+        If True, uses the dev S3 bucket
+
+    Returns
+    -------
+    s3_bucket : str
+        The name of the destination S3 bucket
+    """
+    return "s3://us-registers" if not dev else "s3://us-registers-dev"

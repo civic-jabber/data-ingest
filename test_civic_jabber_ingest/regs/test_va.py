@@ -3,6 +3,7 @@ import os
 import requests
 
 import civic_jabber_ingest.regs.va as regs
+import civic_jabber_ingest.utils.aws as aws
 from civic_jabber_ingest.utils.environ import modified_environ
 
 
@@ -168,7 +169,8 @@ def test_load_va_regulations(tmpdir, monkeypatch):
 
     monkeypatch.setattr(regs, "get_issue_ids", lambda volume, issue: mock_issue_ids)
     monkeypatch.setattr(regs, "get_regulation", lambda issue_id: MOCK_REGULATION)
-    monkeypatch.setattr(regs, "_get_loaded_issues", lambda *args: mock_loaded_issues)
+    monkeypatch.setattr(regs, "_get_loaded_issues", lambda **kwargs: mock_loaded_issues)
+    monkeypatch.setattr(aws, "sync_state", lambda *args: True)
     monkeypatch.setattr(
         regs, "list_all_volumes", lambda *args, **kwargs: mock_listed_issues
     )
@@ -195,6 +197,13 @@ def test_get_loaded_issues(tmpdir):
     with modified_environ(**env):
         loaded_issues = regs._get_loaded_issues(tmpdir.dirname)
         assert loaded_issues == {("01", "01"), ("01", "02"), ("02", "01"), ("03", "01")}
+
+
+def test_get_loaded_issues_from_aws(monkeypatch):
+    mock_files = ["va/30/12/131.xml", "va/30/12/132.xml", "va/31/01/134.xml"]
+    monkeypatch.setattr(aws, "s3_ls", lambda **kwargs: mock_files)
+    loaded_issues = regs._get_loaded_issues(local=False)
+    assert loaded_issues == {("30", "12"), ("31", "01")}
 
 
 def test_parse_contact():
