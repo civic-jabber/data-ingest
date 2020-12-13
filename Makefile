@@ -15,7 +15,7 @@ tidy:
 	black test_civic_jabber_ingest
 
 test:
-	pytest test_civic_jabber_ingest --cov=civic_jabber_ingest -vv
+	pytest test_civic_jabber_ingest --cov=civic_jabber_ingest -vv -m "not slow"
 
 ################
 # Install
@@ -44,7 +44,7 @@ package:
 publish:
 	make package
 	twine upload dist/*
-	
+
 ################
 # Database
 ################

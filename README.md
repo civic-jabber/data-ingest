@@ -27,6 +27,15 @@ install the Python LXML parser using the following command:
 apt-get install python-lxml libxml2-dev libxslt-dev
 ```
 
+To use the AWS utilities, you'll also need to install the AWS CLI with
+```
+sudo apt-get install awscli
+```
+Once you install the AWS CLI, you can set up your profile with `aws configure`. For now,
+only Matt has access to the AWS resources. As the project moves on, we may give select
+people access to dev AWS resources.
+
+
 The following packages are required for `newspaper` to recognize `.jpg` images
 ```
 apt-get install libjpeg-dev zlib1g-dev libpng-dev
