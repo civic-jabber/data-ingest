@@ -1,6 +1,8 @@
 import os
 import subprocess
 
+import boto3
+
 import civic_jabber_ingest.utils.config as config
 
 
@@ -59,3 +61,24 @@ def sync_state(state, dev=False):
 
     dst = os.path.join(config.regs_s3_bucket(dev=dev), state.lower())
     return s3_sync(src, dst)
+
+
+def s3_ls(prefix="", dev=False):
+    """Lists the subdirectories for an S3 bucket prefix.
+
+    Parameters
+    ----------
+    prefix : str
+        The bucket prefix for S3
+    dev : bool
+        If True, uses the dev bucket
+
+    Returns
+    -------
+    files : list
+        A list of files
+    """
+    bucket_name = config.regs_s3_bucket(dev=dev).split("//")[1]
+    prefix = prefix[1:] if prefix.startswith("/") else prefix
+    bucket = boto3.resource("s3").Bucket(bucket_name)
+    return [f for f in (_.key for _ in bucket.objects.filter(Prefix=prefix))]
