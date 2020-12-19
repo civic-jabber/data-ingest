@@ -71,7 +71,7 @@ def load_va_regulations(sleep_time=1, local=True, dev=False):
         aws.sync_state("va")
 
 
-def _get_loaded_issues(directory=None, local=True, dev=True):
+def _get_loaded_issues(directory=None, local=True, dev=False):
     """Pulls a list of issues and volumes that have already been loaded in the local
     filesystem
 
