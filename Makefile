@@ -9,13 +9,16 @@ lint:
 lint-black:
 	black civic_jabber_ingest --check
 	black test_civic_jabber_ingest --check
+	black dags --check
 
 tidy:
 	black civic_jabber_ingest
 	black test_civic_jabber_ingest
+	black dags
 
 test:
 	pytest test_civic_jabber_ingest --cov=civic_jabber_ingest -vv -m "not slow"
+	python dags/states.py # Checks to make sure the DAG is valid
 
 ################
 # Install
