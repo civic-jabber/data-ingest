@@ -31,10 +31,28 @@ To use the AWS utilities, you'll also need to install the AWS CLI with
 ```
 sudo apt-get install awscli
 ```
+
 Once you install the AWS CLI, you can set up your profile with `aws configure`. For now,
 only Matt has access to the AWS resources. As the project moves on, we may give select
 people access to dev AWS resources.
 
+The following dependencies are required to run Airflow:
+
+```
+sudo apt-get install -y --no-install-recommends \
+        freetds-bin \
+        krb5-user \
+        ldap-utils \
+        libffi6 \
+        libsasl2-2 \
+        libsasl2-modules \
+        libssl1.1 \
+        locales  \
+        lsb-release \
+        sasl2-bin \
+        sqlite3 \
+        unixodbc
+```
 
 The following packages are required for `newspaper` to recognize `.jpg` images
 ```
