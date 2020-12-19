@@ -3,7 +3,7 @@
 #######################
 
 lint:
-	black civic_jabber_ingest --check
+	make lint-black
 	flake8
 
 lint-black:
