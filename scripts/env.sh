@@ -7,5 +7,5 @@ project_path=$(dirname "$script_path")
 
 # Airflow
 export AIRFLOW__CORE__DAGS_FOLDER=${project_path}/dags
-export AIRFLOW__LOGGING__LOGGING_LEVEL=WARN
+export AIRFLOW__LOGGING__LOGGING_LEVEL=INFO
 export AIRFLOW__CORE__LOAD_EXAMPLES=False
