@@ -12,7 +12,7 @@ from civic_jabber_ingest.utils.data_cleaning import (
     extract_email,
     extract_phone_number,
 )
-import civic_jabber_ingest.utils.aws as aws
+import civic_jabber_ingest.external_services.aws as aws
 import civic_jabber_ingest.utils.config as config
 from civic_jabber_ingest.utils.scrape import get_page
 
