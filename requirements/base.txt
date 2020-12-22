@@ -32,6 +32,7 @@ connexion[flask,swagger-ui]==2.7.0  # via apache-airflow
 croniter==0.3.36          # via apache-airflow
 cryptography==3.3.1       # via apache-airflow
 cssselect==1.1.0          # via newspaper3k
+daiquiri==3.0.0           # via -r requirements/base.in
 defusedxml==0.6.0         # via python3-openid
 dill==0.3.3               # via apache-airflow
 dnspython==2.0.0          # via email-validator
@@ -93,6 +94,7 @@ pyrsistent==0.17.3        # via jsonschema
 python-daemon==2.2.4      # via apache-airflow
 python-dateutil==2.8.1    # via alembic, apache-airflow, botocore, croniter, flask-appbuilder, newspaper3k, pandas, pendulum
 python-editor==1.0.4      # via alembic
+python-json-logger==2.0.1  # via daiquiri
 python-nvd3==0.15.0       # via apache-airflow
 python-slugify==4.0.1     # via apache-airflow, python-nvd3
 python3-openid==3.2.0     # via flask-openid

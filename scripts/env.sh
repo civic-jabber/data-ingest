@@ -9,3 +9,6 @@ project_path=$(dirname "$script_path")
 export AIRFLOW__CORE__DAGS_FOLDER=${project_path}/dags
 export AIRFLOW__LOGGING__LOGGING_LEVEL=INFO
 export AIRFLOW__CORE__LOAD_EXAMPLES=False
+
+# Turn off TQDM progress bar so it doesn't spam the logs
+export CIVIC_JABBER_TQDM=False
