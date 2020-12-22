@@ -3,12 +3,15 @@ import time
 import uuid
 
 import newspaper
-import tqdm
 
 from civic_jabber_ingest.models.article import Article
 import civic_jabber_ingest.utils.database as db
+from civic_jabber_ingest.utils.logging import get_logger, tqdm
 from civic_jabber_ingest.utils.config import read_config
 from civic_jabber_ingest.utils.scrape import get_page
+
+
+LOGGER = get_logger()
 
 
 _connection = None
@@ -31,7 +34,7 @@ def load_news(states=None):
         scrape all states
     """
     _connect()
-    print("Reading newspaper configuration file ...")
+    LOGGER.info("Reading newspaper configuration file ...")
     valid_papers = read_config("newspaper")
     if states:
         states = [states] if isinstance(states, str) else states
@@ -39,7 +42,7 @@ def load_news(states=None):
             paper for paper in valid_papers if _check_state(states, paper["states"])
         ]
 
-    for metadata in tqdm.tqdm(valid_papers):
+    for metadata in tqdm(valid_papers):
         paper = newspaper.build(metadata["url"])
         paper_data = {
             "source_id": metadata["id"],
@@ -114,7 +117,7 @@ def find_sources(sleep_time=1):
     states = page.find("div", class_="row desktop").find_all("a")
 
     sources = list()
-    for state in tqdm.tqdm(states):
+    for state in tqdm(states):
         state_code = state.get("href").split("=")[-1]
         sources.extend(_state_sources(state_code))
         time.sleep(sleep_time)

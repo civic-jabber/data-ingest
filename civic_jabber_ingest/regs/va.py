@@ -2,8 +2,7 @@ import os
 import re
 from time import sleep
 
-import tqdm
-
+import civic_jabber_ingest.external_services.aws as aws
 from civic_jabber_ingest.models.contact import Contact
 from civic_jabber_ingest.models.regulation import Regulation
 from civic_jabber_ingest.utils.data_cleaning import (
@@ -12,9 +11,12 @@ from civic_jabber_ingest.utils.data_cleaning import (
     extract_email,
     extract_phone_number,
 )
-import civic_jabber_ingest.utils.aws as aws
+from civic_jabber_ingest.utils.logging import get_logger, tqdm
 import civic_jabber_ingest.utils.config as config
 from civic_jabber_ingest.utils.scrape import get_page
+
+
+LOGGER = get_logger()
 
 
 VA_REGISTRY_PAGE = "http://register.dls.virginia.gov/archive.aspx"
@@ -50,7 +52,7 @@ def load_va_regulations(sleep_time=1, local=True, dev=False):
     issues_to_process = registry_issues.difference(loaded_issues)
 
     for volume, issue in issues_to_process:
-        print(f"Loading regulations for Vol. {volume} Issue {issue}.")
+        LOGGER.info(f"Loading regulations for Vol. {volume} Issue {issue}.")
 
         volume_dir = os.path.join(_get_va_regulation_dir(), volume)
         if not os.path.exists(volume_dir):
@@ -61,7 +63,7 @@ def load_va_regulations(sleep_time=1, local=True, dev=False):
             os.mkdir(issue_dir)
 
         issue_ids = get_issue_ids(volume, issue)
-        for issue_id in tqdm.tqdm(issue_ids):
+        for issue_id in tqdm(issue_ids):
             filename = os.path.join(issue_dir, f"{issue_id}.xml")
             regulation = normalize_regulation(get_regulation(issue_id))
             regulation.to_xml(filename)

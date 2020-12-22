@@ -3,7 +3,7 @@ import os
 import requests
 
 import civic_jabber_ingest.regs.va as regs
-import civic_jabber_ingest.utils.aws as aws
+import civic_jabber_ingest.external_services.aws as aws
 from civic_jabber_ingest.utils.environ import modified_environ
 
 

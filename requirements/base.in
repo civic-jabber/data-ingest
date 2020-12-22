@@ -2,6 +2,7 @@ apache-airflow[password]
 beautifulsoup4
 boto3
 click
+daiquiri
 Jinja2
 lxml
 newspaper3k
