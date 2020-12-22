@@ -58,3 +58,13 @@ class MyTestCase(unittest.TestCase):
         database.delete_by_id("1", schema="fakeroo", table="parrot", connection=conn)
         data = pd.read_sql("SELECT * FROM fakeroo.parrot", conn)
         assert len(data) == 0
+
+
+def test_news_source_top_keyworkds(monkeypatch):
+    mock_keywords = [(435, "state"), (423, "county")]
+
+    def mock_execute_sql(*args, **kwargs):
+        return mock_keywords
+
+    monkeypatch.setattr(database, "execute_sql", mock_execute_sql)
+    assert database.news_source_top_keywords(None) == mock_keywords

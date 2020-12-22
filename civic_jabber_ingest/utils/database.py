@@ -37,7 +37,7 @@ def execute_sql(sql, connection, values=None, select=False, commit=True):
 
 
 def insert_obj(obj, table, schema="civic_jabber", connection=None):
-    """Inserts a data model object into the specified tabele.
+    """Inserts a data model object into the specified table.
 
     Parameters
     ----------
@@ -81,3 +81,30 @@ def delete_by_id(id_, table, schema="civic_jabber", id_col="id", connection=None
         WHERE {id_col}='{id_}'
     """
     execute_sql(sql, connection)
+
+
+def news_source_top_keywords(connection, limit=500):
+    """Pulls the top keywords extracted from articles scraped by newspaper. This is
+    useful for finding appropriate articles for model training.
+
+    Parameters
+    ----------
+    limit : int
+        The number of keywords to return
+
+    Returns
+    -------
+    keywords : list
+        A list of key words and their counts
+    """
+    sql = f"""
+        SELECT COUNT(keyword) as keyword_count, keyword
+        FROM (
+            SELECT LOWER(UNNEST(keywords)) as keyword
+            FROM civic_jabber.articles
+        ) x
+        GROUP BY keyword
+        ORDER BY keyword_count DESC
+        LIMIT {limit}
+    """
+    return execute_sql(sql, connection, select=True)
