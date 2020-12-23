@@ -11,7 +11,7 @@ def valid_regulation():
   <issue>14</issue>
   <volume>19</volume>
   <notice>Notice: this is a great reg!</notice>
-  <effectiveDate>2020-06-08</effectiveDate>
+  <date>2020-06-08</date>
   <link>https://thebestregs.com</link>
   <status>Final Regulation</status>
   <chapter>Chapter 4</chapter>

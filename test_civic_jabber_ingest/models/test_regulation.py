@@ -22,11 +22,13 @@ MOCK_REGULATION = {
     "titles": [{"code": "VA-001", "description": "Fish"}],
     "contacts": [Contact.from_dict({"first_name": "Jabber", "last_name": "Robinson"})],
     "authority": "Parrot law, subsection 4",
-    "effective_date": datetime.datetime(2020, 6, 8),
+    "date": datetime.datetime(2020, 6, 8),
     "register_date": datetime.datetime(2020, 7, 20),
     "as_of_date": datetime.datetime(2020, 8, 4),
     "link": "https://thebestregs.com",
     "extra_attributes": dict(),
+    "start_date": None,
+    "end_date": None,
 }
 
 
@@ -36,7 +38,7 @@ REGULATION_XML = """
   <issue>14</issue>
   <volume>19</volume>
   <notice><u>Notice:</u> this is a great reg!</notice>
-  <effectiveDate>2020-06-08</effectiveDate>
+  <date>2020-06-08</date>
   <link>https://thebestregs.com</link>
   <status>Final Regulation</status>
   <chapter>Chapter 4</chapter>

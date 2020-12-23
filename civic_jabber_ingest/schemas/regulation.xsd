@@ -7,7 +7,9 @@
       <xs:element name="volume" minOccurs="0" maxOccurs="1" />
       <xs:element name="notice" minOccurs="0" maxOccurs="1" />
       <xs:element name="registerDate" type="xs:string" minOccurs="0" maxOccurs="1" />
-      <xs:element name="effectiveDate" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="date" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="startDate" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="endDate" type="xs:string" minOccurs="0" maxOccurs="1" />
       <xs:element name="link" type="xs:string" minOccurs="0" maxOccurs="1" />
       <xs:element name="status" minOccurs="0" maxOccurs="1" />
       <xs:element name="chapter" minOccurs="0" maxOccurs="1" />

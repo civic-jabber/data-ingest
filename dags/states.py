@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from functools import partial
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
@@ -20,5 +19,6 @@ dag = DAG(
 )
 
 
-run_va = partial(load_va_regulations, local=False)
-load_va = PythonOperator(task_id="va-regulations-load", python_callable=run_va, dag=dag)
+load_va = PythonOperator(
+    task_id="va-regulations-load", python_callable=load_va_regulations, dag=dag
+)
