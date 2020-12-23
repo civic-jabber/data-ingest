@@ -249,8 +249,8 @@ def _parse_html(html):
     metadata = html.find_all("p", class_="textbl")
     issue, volume, date = _get_issue_data(html)
 
-    reg["issue"] = issue
-    reg["volume"] = volume
+    reg["issue"] = issue.zfill(2)
+    reg["volume"] = volume.zfill(2)
 
     reg["notice"] = _get_notice(html)
     reg["content"] = _get_regulation_content(html)
@@ -444,6 +444,8 @@ def _get_titles(metadata):
     """
     titles = list()
     for line in metadata:
+        if "Date" in line.text:
+            break
         bold = line.find_all("b") + line.find_all("strong")
         text = str()
         for item in bold:
