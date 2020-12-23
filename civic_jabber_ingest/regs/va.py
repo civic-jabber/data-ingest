@@ -1,6 +1,8 @@
+import datetime
 import os
 import re
 from time import sleep
+import uuid
 
 import civic_jabber_ingest.external_services.aws as aws
 from civic_jabber_ingest.models.contact import Contact
@@ -216,8 +218,8 @@ def reg_to_titles(regulation):
 
     Returns:
     --------
-    normalized_title : Title
-        A base Title object
+    title : Title
+        A list of titles
     """
     titles = list()
 
@@ -228,8 +230,13 @@ def reg_to_titles(regulation):
     for sub_title in regulation["titles"]:
         title = dict()
 
+        if sub_title["code"] in [x.title for x in titles]:
+            continue
+
+        title["id"] = uuid.uuid4().hex
         title["title"] = sub_title["code"]
         title["description"] = sub_title["description"]
+        title["as_of_date"] = datetime.datetime.now()
 
         date = regulation["date"]
         if date:
