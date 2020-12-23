@@ -29,7 +29,9 @@ class Regulation(DataModel):
     contacts: list = None
 
     register_date: datetime.datetime = None
-    effective_date: datetime.datetime = None
+    date: datetime.datetime = None
+    start_date: datetime.datetime = None
+    end_date: datetime.datetime = None
     as_of_date: datetime.datetime = datetime.datetime.now()
 
     link: str = None

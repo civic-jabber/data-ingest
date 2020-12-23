@@ -168,7 +168,13 @@ def normalize_regulation(regulation):
         )
         normalized_reg["contacts"] = [contact]
 
-    normalized_reg["effective_date"] = extract_date(regulation["effective_date"])
+    date = regulation["date"]
+    if "through" in date:
+        start_date, end_date = tuple(date.split("through")[:2])
+        normalized_reg["start_date"] = extract_date(start_date)
+        normalized_reg["end_date"] = extract_date(end_date)
+    else:
+        normalized_reg["date"] = extract_date(date)
     normalized_reg["register_date"] = extract_date(regulation["register_date"])
 
     for key in vars(Regulation()):
@@ -261,7 +267,7 @@ def _parse_html(html):
     reg["contact"] = _get_target_metadata(metadata, "Contact")
 
     reg["register_date"] = date
-    reg["effective_date"] = _get_target_metadata(metadata, "Effective Date")
+    reg["date"] = _get_target_metadata(metadata, "Date")
     return reg
 
 
@@ -392,7 +398,7 @@ def _get_target_metadata(metadata, target):
     """
     for line in metadata:
         if target in line.text:
-            if target == "Effective Date" and target.endswith("."):
+            if target == "Date" and target.endswith("."):
                 line = line[:-1]
             if ":" in line.text:
                 return clean_whitespace(line.text.split(":")[1])

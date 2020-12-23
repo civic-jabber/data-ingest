@@ -125,7 +125,7 @@ def test_get_regulation(monkeypatch):
         ],
         "contact": "Jabber Robinson, jabber@robinson.com",
         "authority": "Parrot law, subsection 4",
-        "effective_date": "June 08, 2020",
+        "date": "June 08, 2020",
         "register_date": "June 01, 2020",
         "link": regs.VA_REGULATION.format(site_id="fake_id"),
         "state": "va",
@@ -152,7 +152,7 @@ MOCK_REGULATION = {
     "authority": "§ 59.1-369 of the Code of Virginia.",
     "contact": "Kimberly Mackey, Regulatory Coordinator",
     "register_date": "August 03, 2020",
-    "effective_date": "July 27, 2020.",
+    "date": "July 27, 2020.",
     "link": "http://register.dls.virginia.gov/details.aspx?id=8112",
 }
 

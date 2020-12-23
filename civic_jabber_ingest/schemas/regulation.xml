@@ -16,8 +16,14 @@
 {% if "registerDate" in data %}
   <registerDate>{{ data["register_date"].date().isoformat() }}</registerDate>
 {% endif %}
-{% if "effective_date" in data %}
-  <effectiveDate>{{ data["effective_date"].date().isoformat() }}</effectiveDate>
+{% if "date" in data %}
+  <date>{{ data["date"].date().isoformat() }}</date>
+{% endif %}
+{% if "start_date" in data %}
+  <startDate>{{ data["start_date"].date().isoformat() }}</startDate>
+{% endif %}
+{% if "end_date" in data %}
+  <endDate>{{ data["end_date"].date().isoformat() }}</endDate>
 {% endif %}
 {% if "link" in data %}
   <link>{{ data["link"] }}</link>
