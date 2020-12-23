@@ -1,9 +1,11 @@
 import os
 
 import requests
+import pytest
 
 import civic_jabber_ingest.regs.va as regs
 import civic_jabber_ingest.external_services.aws as aws
+import civic_jabber_ingest.utils.database as database
 from civic_jabber_ingest.utils.environ import modified_environ
 
 
@@ -112,10 +114,10 @@ def test_get_regulation(monkeypatch):
         "volume": "19",
         "content": {
             "VA-001": {
-                "description": "Good Reg",
-                "text": "A<s>n</s> good<s><u>outstanding</u></s> reg",
+                "code": "Good Reg",
+                "description": "A<s>n</s> good<s><u>outstanding</u></s> reg",
             },
-            "VA-002": {"description": "Bad Reg", "text": "A bad reg"},
+            "VA-002": {"code": "Bad Reg", "description": "A bad reg"},
         },
         "summary": "A wonderful summary!",
         "preamble": "A wonderful preamble!",
@@ -145,7 +147,7 @@ MOCK_REGULATION = {
     "preamble": None,
     "titles": [
         {
-            "title": "11VAC10-120",
+            "code": "11VAC10-120",
             "description": "Claiming Races (amending 11VAC10-120-50)",
         }
     ],
@@ -177,10 +179,27 @@ def test_load_va_regulations(tmpdir, monkeypatch):
 
     env = {"CIVIC_JABBER_DATA_DIR": tmpdir.dirname}
     with modified_environ(**env):
-        regs.load_va_regulations(sleep_time=0)
+        regs.load_va_regulations(sleep_time=0, source="aws")
 
     assert os.path.exists(f"{tmpdir.dirname}/regs/va/02/01/1111.xml")
     assert os.path.exists(f"{tmpdir.dirname}/regs/va/02/01/2222.xml")
+
+
+def test_load_va_regulations_with_postgres(tmpdir, monkeypatch):
+    mock_loaded_issues = {("01", "01"), ("01", "02")}
+    mock_listed_issues = {("01", "01"), ("01", "02"), ("02", "01")}
+    mock_issue_ids = ["1111", "2222"]
+
+    monkeypatch.setattr(regs, "get_issue_ids", lambda volume, issue: mock_issue_ids)
+    monkeypatch.setattr(regs, "get_regulation", lambda issue_id: MOCK_REGULATION)
+    monkeypatch.setattr(regs, "_get_loaded_issues", lambda **kwargs: mock_loaded_issues)
+    monkeypatch.setattr(database, "connect", lambda *args, **kwargs: True)
+    monkeypatch.setattr(database, "insert_obj", lambda *args, **kwargs: True)
+    monkeypatch.setattr(
+        regs, "list_all_volumes", lambda *args, **kwargs: mock_listed_issues
+    )
+
+    regs.load_va_regulations(sleep_time=0, source="postgres")
 
 
 def test_get_loaded_issues(tmpdir):
@@ -195,15 +214,27 @@ def test_get_loaded_issues(tmpdir):
 
     env = {"CIVIC_JABBER_DATA_DIR": tmpdir.dirname}
     with modified_environ(**env):
-        loaded_issues = regs._get_loaded_issues(tmpdir.dirname)
+        loaded_issues = regs._get_loaded_issues(tmpdir.dirname, source="local")
         assert loaded_issues == {("01", "01"), ("01", "02"), ("02", "01"), ("03", "01")}
 
 
 def test_get_loaded_issues_from_aws(monkeypatch):
     mock_files = ["va/30/12/131.xml", "va/30/12/132.xml", "va/31/01/134.xml"]
     monkeypatch.setattr(aws, "s3_ls", lambda **kwargs: mock_files)
-    loaded_issues = regs._get_loaded_issues(local=False)
+    loaded_issues = regs._get_loaded_issues(source="aws")
     assert loaded_issues == {("30", "12"), ("31", "01")}
+
+
+def test_get_loaded_issues_from_postgres(monkeypatch):
+    mock_issues = [("30", "12"), ("31", "01")]
+    monkeypatch.setattr(database, "execute_sql", lambda *args, **kwargs: mock_issues)
+    loaded_issues = regs._get_loaded_issues(source="postgres", connection="connection")
+    assert loaded_issues == set(mock_issues)
+
+
+def test_get_loaded_issues_raises_with_bad_option():
+    with pytest.raises(ValueError):
+        regs._get_loaded_issues(source="koalas")
 
 
 def test_parse_contact():

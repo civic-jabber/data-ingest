@@ -5,6 +5,8 @@ from time import sleep
 import civic_jabber_ingest.external_services.aws as aws
 from civic_jabber_ingest.models.contact import Contact
 from civic_jabber_ingest.models.regulation import Regulation
+from civic_jabber_ingest.models.title import Title
+import civic_jabber_ingest.utils.database as database
 from civic_jabber_ingest.utils.data_cleaning import (
     clean_whitespace,
     extract_date,
@@ -35,7 +37,7 @@ def _get_va_regulation_dir():
     return va_dir
 
 
-def load_va_regulations(sleep_time=1, local=True, dev=False):
+def load_va_regulations(sleep_time=1, source="postgres", dev=False):
     """Downloads and stores VA regulations locally as XML files.
 
     Parameters
@@ -47,8 +49,9 @@ def load_va_regulations(sleep_time=1, local=True, dev=False):
     dev : bool
         If True, uses the dev S3 bucket
     """
+    connection = database.connect() if source == "postgres" else None
     registry_issues = list_all_volumes()
-    loaded_issues = _get_loaded_issues(local=local, dev=dev)
+    loaded_issues = _get_loaded_issues(source=source, dev=dev, connection=connection)
     issues_to_process = registry_issues.difference(loaded_issues)
 
     for volume, issue in issues_to_process:
@@ -65,15 +68,21 @@ def load_va_regulations(sleep_time=1, local=True, dev=False):
         issue_ids = get_issue_ids(volume, issue)
         for issue_id in tqdm(issue_ids):
             filename = os.path.join(issue_dir, f"{issue_id}.xml")
-            regulation = normalize_regulation(get_regulation(issue_id))
-            regulation.to_xml(filename)
+            reg = get_regulation(issue_id)
+            if source == "postgres":
+                titles = reg_to_titles(reg)
+                for title in titles:
+                    database.insert_obj(title, "titles", connection=connection)
+            else:
+                regulation = normalize_regulation(reg)
+                regulation.to_xml(filename)
             sleep(sleep_time)
 
-    if not local:
+    if source == "aws":
         aws.sync_state("va")
 
 
-def _get_loaded_issues(directory=None, local=True, dev=False):
+def _get_loaded_issues(directory=None, source="postgres", dev=False, connection=None):
     """Pulls a list of issues and volumes that have already been loaded in the local
     filesystem
 
@@ -81,10 +90,12 @@ def _get_loaded_issues(directory=None, local=True, dev=False):
     ----------
     directory : str
         The directory to check for loaded issues.
-    local : bool
-        If True, checks the local directory for loaded issues. Otherwise, checks S3
+    source : str
+        Where to look for the loaded issues
     dev : bool
         If True, uses the dev S3 bucket
+    connection : psycopg2.Connection
+        The database connection, if applicable
 
     Returns
     -------
@@ -94,20 +105,29 @@ def _get_loaded_issues(directory=None, local=True, dev=False):
     """
     directory = _get_va_regulation_dir() if not directory else directory
     loaded_issues = set()
-    if local:
+    if source == "local":
         for directory, subdirectories, _ in os.walk(directory):
             # Look for directories that look like ../va/1, not ../va or ../va/1/2
             if SUB_DIRECTORY_RE.search(directory) is not None:
                 volume = directory.split("/")[-1]
                 for issue in subdirectories:
                     loaded_issues.add((volume, issue))
-    else:
+    elif source == "aws":
         files = aws.s3_ls(prefix="va", dev=dev)
         for filename in files:
             result = S3_PREFIX_RE.search(filename)
             if result:
                 volume, issue = tuple(result.group().split("/"))
                 loaded_issues.add((volume, issue))
+    elif source == "postgres":
+        sql = """
+            SELECT DISTINCT volume, issue
+            FROM civic_jabber.titles
+        """
+        connection = database.connect() if not connection else connection
+        loaded_issues = set(database.execute_sql(sql, connection, select=True))
+    else:
+        raise ValueError("Invalid option for searching loaded issues.")
 
     return loaded_issues
 
@@ -173,6 +193,7 @@ def normalize_regulation(regulation):
         start_date, end_date = tuple(date.split("through")[:2])
         normalized_reg["start_date"] = extract_date(start_date)
         normalized_reg["end_date"] = extract_date(end_date)
+        del regulation["date"]
     else:
         normalized_reg["date"] = extract_date(date)
     normalized_reg["register_date"] = extract_date(regulation["register_date"])
@@ -182,6 +203,51 @@ def normalize_regulation(regulation):
             normalized_reg[key] = regulation[key]
 
     return Regulation.from_dict(normalized_reg)
+
+
+def reg_to_titles(regulation):
+    """Normalizes the regulation dictionary and converts it to the standardized
+    Title object.
+
+    Parameters
+    ----------
+    regulation : dict
+        A dictionary representing the infromation scraped from the registry site.
+
+    Returns:
+    --------
+    normalized_title : Title
+        A base Title object
+    """
+    titles = list()
+
+    summary = regulation.get("summary")
+    if not summary:
+        summary = regulation.get("preamble")
+
+    for sub_title in regulation["titles"]:
+        title = dict()
+
+        title["title"] = sub_title["code"]
+        title["description"] = sub_title["description"]
+
+        date = regulation["date"]
+        if date:
+            if "through" in date:
+                start_date, end_date = tuple(date.split("through")[:2])
+                title["start_date"] = extract_date(start_date)
+                title["end_date"] = extract_date(end_date.replace("  ", " "))
+            else:
+                title["date"] = extract_date(date)
+        title["register_date"] = extract_date(regulation["register_date"])
+
+        for key in vars(Title()):
+            if key not in title and key in regulation and key != "date":
+                title[key] = regulation[key]
+
+        titles.append(Title.from_dict(title))
+
+    return titles
 
 
 def list_all_volumes():
@@ -268,6 +334,8 @@ def _parse_html(html):
 
     reg["register_date"] = date
     reg["date"] = _get_target_metadata(metadata, "Date")
+    if not reg["date"]:
+        reg["date"] = _get_target_metadata(metadata, "Deadline")
     return reg
 
 
@@ -325,8 +393,8 @@ def _get_regulation_content(html):
     def _add_reg_text(regulation, description, text):
         if regulation and description:
             content[regulation] = {
-                "text": clean_whitespace(text),
-                "description": clean_whitespace(description),
+                "description": clean_whitespace(text),
+                "code": clean_whitespace(description),
             }
 
     paras = html.find_all("p")
